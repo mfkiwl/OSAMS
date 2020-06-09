@@ -55,11 +55,13 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	nodes = pd.concat([nodes,current_nodes],ignore_index = True)
 	return x1, nodes, elements
 
-def start_path(template_nodes,template_elements,step,dr,dist,x0):
+def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
 	#creates nodes for the path start
-	nodes = template_nodes[['type','ref','X','step']].copy()
-	current_nodes = template_nodes[['type','ref','X','step']].copy()
+	current_nodes0 = template_nodes[['type','ref','X','step']].copy()
+	current_nodes1 = template_nodes[['type','ref','X','step']].copy()
 
+	#gets the size of the template and current nodes
+	temp_num = current_nodes0.shape[0]
 	num_n = nodes.shape[0]
 
 	#centroid at end of step: 	x1
@@ -69,22 +71,34 @@ def start_path(template_nodes,template_elements,step,dr,dist,x0):
 	unit_vector = np.transpose(np.array([0,1,0])) * dist
 	VN = np.matmul(rotZ(dr),unit_vector)
 	x1 = x0 + VN
+	
+	current_nodes0['step'] = step
+	current_nodes1['step'] = step
+
+	current_elements = template_elements.copy()
 
 	#vecrtorized for speed
 	#translates the template nodes to increment location
-	nodes['X'] = template_nodes['V'].apply(lambda x: x0 + np.matmul(R,np.transpose(x)))
-	current_nodes['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
+	current_nodes0['X'] = template_nodes['V'].apply(lambda x: x0 + np.matmul(R,np.transpose(x)))
+	current_nodes1['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
 
+	
 	#creates the elements
-	elements = template_elements.copy()
 	f4 = lambda x: x+num_n
-	elements['n4']=elements['n4'].apply(f4)
-	elements['n5']=elements['n5'].apply(f4)
-	elements['n6']=elements['n6'].apply(f4)
-	elements['step'] = step
+	current_elements['n1'] = current_elements['n1'].apply(f4)
+	current_elements['n2'] = current_elements['n2'].apply(f4)
+	current_elements['n3'] = current_elements['n3'].apply(f4)
 
-	nodes = pd.concat([nodes,current_nodes],ignore_index = True)
-	nodes['step'] = step
+	f4 = lambda x: x+temp_num+num_n
+	current_elements['n4']=current_elements['n4'].apply(f4)
+	current_elements['n5']=current_elements['n5'].apply(f4)
+	current_elements['n6']=current_elements['n6'].apply(f4)
+	current_elements['step'] = step
+
+	nodes = pd.concat([nodes,current_nodes0],ignore_index = True)
+	nodes = pd.concat([nodes,current_nodes1],ignore_index = True)
+	elements = pd.concat([elements,current_elements],ignore_index = True)
+
 	return x1, nodes, elements
 """
 rotates about the GLOBAL z axis

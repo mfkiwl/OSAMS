@@ -1,3 +1,5 @@
 __pycache__/*
 *.swp
 *.xlsx
+analysis.inp
+SUBROUTINES/dflux.for

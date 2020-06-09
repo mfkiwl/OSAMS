@@ -49,11 +49,9 @@ def out_elements(elements,nodes,step = 100000):
 	el_def = "*ELEMENT,ELSET = ALLELEMENTS, TYPE = C3D6T"
 	elements = elements.loc[elements['step'] < step]
 	for i,element in elements.iterrows():
-		e_nodes = element.loc[['n1','n2' ,'n3','n4','n5','n6']]
-		for e_node in e_nodes:
-			if (nodes.at[i,'ref'] != -1):
-				e_node = nodes.at[i,'ref']
+		e_nodes = element.loc[['n1','n2' ,'n3','n4','n5','n6']] + 1
 		el_def = el_def + (f"\n{i+1}\t,{e_nodes[0]}\t,{e_nodes[1]}\t,{e_nodes[2]}\t,{e_nodes[3]}\t,{e_nodes[4]}\t,{e_nodes[5]}")
+
 	return el_def
 
 """
@@ -64,7 +62,7 @@ args:
 """
 def out_surf(nodes,name,step =  100000):
 	s_def = f"\n*SURFACE, NAME = {name}, TYPE=ELEMENT"
-	s_def = s_def + f"\nALLELEMENTS,"
+	s_def = s_def + f"\n ALLELEMENTS,"
 	cn = nodes.loc[nodes['type'] == name]
 	#s_def = s_def + f"\n{nodes.index[0]+1}"
 	#for i,node in cn[1:].iterrows():
@@ -85,4 +83,21 @@ def n_set(nodes,name,step = 10000):
 	for i,node in cn.iterrows():
 		s_def = s_def + f"{i+1},\n"
 	#s_def.join("\n")
+	return s_def
+
+"""
+Generates a surface based on where elements are in template
+args:
+	elements: 	dataframe of the elements
+	names:		names of category to be in this surface
+	name:		name of surface in inp file
+returns:
+	surface definition
+"""
+def gensurf(elements,name,names,step=[0]):
+	s_def = f"\n*SURFACE, NAME = {name}, TYPE=ELEMENT"
+	els = elements.loc[elements['type'].isin(names)]
+	els = els.loc[els['step'].isin(step)]
+	for i,els in els.iterrows():
+		s_def = s_def + f"\n{i+1},"
 	return s_def

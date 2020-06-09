@@ -8,8 +8,8 @@ def materiel_model():
  0.3,
 *Density
 1050.,
-*Elastic, moduli=INSTANTANEOUS
-2340., 0.4
+*Elastic, moduli=LONG TERM
+2340e6., 0.4
 *Expansion
  1e-05,
 *Specific Heat

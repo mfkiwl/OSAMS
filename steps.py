@@ -6,7 +6,8 @@ def out_step(elements,step_no,steps):
 	dt = 1
 	temp = steps.at[step_no,'BP_T']
 
-	#HEADER FOR STEP DEFINITION BUILD PLATE BOUNDRY CONDITIONS ENFORCED
+	#HEADER FOR STEP DEFINITION BUILD 
+	#PLATE BOUNDRY CONDITIONS ENFORCED
 	s_out = f"""
 *STEP,NAME = STEP_{step_no}, INC= 20000, NLGEOM = YES
 *COUPLED TEMPERATURE-DISPLACEMENT,DELTMX = 2., CETOL= 1e-5
@@ -18,7 +19,9 @@ BUILD_PLATE, 2, 2
 BUILD_PLATE, 3, 3 
 **BUILD_PLATE,11,11, {temp}
 """
-	es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}"
+	deposition = True
+	if (deposition):
+		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}"
 #	for i in range(1,step_no):
 #		es = es + f",\nE_STEP_{i}"
 	s_out = s_out + es
@@ -39,6 +42,8 @@ def inital_step(elements,num_step,steps):
 ALLNODES, 150.
 **INITIAL CONDITIONS, TYPE = TEMPERATURE
 **BUILD_PLATE, 60.
+*SURFACE, NAME = FREE_SURFACE, TYPE = ELEMENT
+ALLELEMENTS,
 *STEP,NAME = STEP_0, INC= 20000, NLGEOM = YES
 *COUPLED TEMPERATURE-DISPLACEMENT, DELTMX = 2., CETOL= 1e-5
 0, 1, 1e-9,0.1
@@ -49,7 +54,9 @@ BUILD_PLATE, 2, 2
 BUILD_PLATE, 3, 3  
 **BUILD_PLATE,11,11, {temp}
 *SFILM
-FREE_SURFACE, F, 20.0, 40 
+FREE_SURFACE, F, 40, 20
+*SFILM
+BUILD_SURFACE, F, 60.0, 1e6 
 """
 	es = "*MODEL CHANGE, REMOVE\n"
 	for i in range(1,num_step):
