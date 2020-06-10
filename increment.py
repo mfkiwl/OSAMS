@@ -21,7 +21,7 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	num_e = elements.shape[0]
 	
 	#copies the nodes
-	current_nodes = template_nodes[['type','ref','X','step']].copy()
+	current_nodes = template_nodes[['type','ref','X','step','master']].copy()
 
 	#centroid at end of step: 	x1
 	#centroid at start of step:	x0	
@@ -36,7 +36,8 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	current_nodes['step'] = step
 
 	current_elements = template_elements.copy()
-	f4 = lambda x: x+num_n-num_ni
+	# M  = 8 for 20 node
+	f4 = lambda x: x+num_n-(num_ni+8)
 	current_elements['n1'] = current_elements['n1'].apply(f4)
 	current_elements['n2'] = current_elements['n2'].apply(f4)
 	current_elements['n3'] = current_elements['n3'].apply(f4)
@@ -57,8 +58,8 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 
 def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
 	#creates nodes for the path start
-	current_nodes0 = template_nodes[['type','ref','X','step']].copy()
-	current_nodes1 = template_nodes[['type','ref','X','step']].copy()
+	current_nodes0 = template_nodes[['type','ref','X','step','master']].copy()
+	current_nodes1 = template_nodes[['type','ref','X','step','master']].copy()
 
 	#gets the size of the template and current nodes
 	temp_num = current_nodes0.shape[0]
@@ -131,8 +132,12 @@ returns:
 """
 def increment(nodes,elements,template_nodes,template_elements,step,dr,dist,m_inc,x0):
 	inc_dist = dist/m_inc
+	n_nodes = template_nodes.shape[0]
 	for i in range(0,m_inc):
 		(x0,nodes,elements) = mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,inc_dist,x0) 
+	
+	#makes nodes at the end of the extrusion step not master nodes
+	nodes[-n_nodes:-1]['master'] = 'NO'
 	return x0,nodes,elements
 
 

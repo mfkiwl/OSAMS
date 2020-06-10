@@ -10,11 +10,10 @@ SETS:
 		BUILD_PLATE:	nodes that are on the build plate (constant for all STEP)
 	
 	ELEMENT SETS:
-		E_STEP_N:		elements that are deposited during STEP N
+		E_STEP_{N}:		elements that are deposited during STEP {N}
 SURFACES:
-	INTERIOR_N:	surfaces that become internal during STEP N
-	BOND_N:		surfaces that become bond surfaces during STEP N
-	HOT_N:		surfaces that become hot during step N and then external during step N+1	
+	{N}_{DIRECTION}:	the {DIRECTION} surface extruded in STEP {N}
+
 	
 ELEMENTS
 	elements are organized by the STEP they are are deposited in
@@ -25,10 +24,12 @@ all STEP correspond to a stepin the ABAQUS analysis
 
 change STEP options by changing values in steps.CSV
 OPTIONS:
-	DT: 	The length of time the STEP occurs over
-	BP_T:	The Build Plate Temperature at the start of the step
-	SOL_T:	the solution technique for the step (SEPARATED or)
-	FAN:	(0-100) percent on of the fans of the extruder (UNIMPLEMENTED)
+	DT: 		The length of time the STEP occurs over
+	BP_T:		The Build Plate Temperature at the start of the step
+	SOL_T:		the solution technique for the step (SEPARATED or)
+	enclosure:	The enclosure temperature
+	h_nat:		the convection cooefficent for FREE surfaces
+	fan:		convection cooeffcient for HOT surfaces = h_nat*(1+fan}
 
 
 

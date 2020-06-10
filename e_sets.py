@@ -1,4 +1,10 @@
 import pandas as pd
+import re 
+
+down_check = re.compile('.*DOWN.*')
+up_check = re.compile('.*UP.*')
+left_check = re.compile('.*LEFT.*')
+right_check = re.compile('.*RIGHT.*')
 
 """
 CREATES THE ELEMENT SET DEFINITIONS FOR THE INP FILE
@@ -6,20 +12,24 @@ ARGS:
 	ELEMENTS:	dataframe of elements
 	step_nums:	the step indices to have sets made
 """
-def element_sets(elements,step_nums):
+def element_sets(elements,steps):
 	esets = "\n**ELEMENTS BY DEPOSISTION STEP"
-	for i in step_nums:
-		#SELECTS ELEMENTS DEPOSITED FOR THAT STEP
-		step_elements = elements.loc[elements['step'] == i]
+	for i,row in steps.iterrows():
+		print(i)
+		if (row['TYPE'] == 'DEPOSITION'):
+			#SELECTS ELEMENTS DEPOSITED FOR THAT STEP
+			step_elements = elements.loc[elements['step'] == i]
+			print(step_elements)
+			print("*********************************")
 
-		#HEADER AND FIRST ELEMENT
-		es_def = f"\n*ELSET, ELSET = E_STEP_{i}"
-		es_def = es_def + f"\n{step_elements.index[0]+1}"
+			#HEADER AND FIRST ELEMENT
+			es_def = f"\n*ELSET, ELSET = E_STEP_{i}"
+			es_def = es_def + f"\n{step_elements.index[0] + 1}"
 
-		for i,row in step_elements[1:].iterrows():
-			es_def = es_def + f",\n{i+1}"
+			for i,row in step_elements[1:].iterrows():
+				es_def = es_def + f",\n{i+1}"
 
-		esets = esets + es_def
+			esets = esets + es_def
 	#END
 	esets.join("\n")
 	return esets
@@ -71,6 +81,22 @@ def out_surf(nodes,name,step =  100000):
 	return s_def
 
 """
+defines the build surface of the model
+"""
+def build_surf(elements,steps):
+	build_steps = steps.loc[steps['layer'] == 0]
+	build_steps = build_steps.index
+	print("BUILDING STEP")
+	print(build_steps)
+	s_def = f"\n*SURFACE, NAME = BUILD_SURFACE, TYPE=ELEMENT"
+	build_elements = elements.loc[elements['step'].isin(build_steps)]
+	build_elements = build_elements.loc[build_elements['type'] == 'DOWN']
+	for i,row in build_elements.iterrows():
+		s_def = s_def + f"\n {i+1},"
+	return s_def
+		
+
+"""
 outputs the node sets
 args:
 	nodes:	nodes of the surface
@@ -86,18 +112,44 @@ def n_set(nodes,name,step = 10000):
 	return s_def
 
 """
-Generates a surface based on where elements are in template
+Generates a surfaces based on where elements are in template
 args:
 	elements: 	dataframe of the elements
 	names:		names of category to be in this surface
 	name:		name of surface in inp file
 returns:
-	surface definition
+	surface definitions for the entire domain
 """
-def gensurf(elements,name,names,step=[0]):
-	s_def = f"\n*SURFACE, NAME = {name}, TYPE=ELEMENT"
-	els = elements.loc[elements['type'].isin(names)]
-	els = els.loc[els['step'].isin(step)]
-	for i,els in els.iterrows():
-		s_def = s_def + f"\n{i+1},"
-	return s_def
+def gen_surf(elements,surfaces):
+	out = ""
+	for i,row in surfaces.iterrows():
+		#prevents creating resundant surfaces
+		if (row['ref'] == -1):
+			
+			#gets the indexes of the surface
+			step = i[0]
+			name = i[1]
+		
+			s_def = f"\n*SURFACE, NAME = {name}_{step}, TYPE=ELEMENT"
+			if (name == 'DOWN'):
+				els = elements.loc[elements['type'].apply(lambda x: down_check.match(x)]
+				els = els.loc[els['step']== step ]
+				for i,els in els.iterrows():
+					s_def = s_def + f"\n{i+1}, S1,"
+			elif (name == 'UP'):
+				els = elements.loc[elements['type'].apply(lambda x: up_check.match(x)]
+				els = els.loc[els['step']== step ]
+				for i,els in els.iterrows():
+					s_def = s_def + f"\n{i+1}, S2,"
+			elif (name == 'LEFT'):
+				els = elements.loc[elements['type'].apply(lambda x: left_check.match(x)]
+				els = els.loc[els['step']== step ]
+				for i,els in els.iterrows():
+					s_def = s_def + f"\n{i+1}, S6,"
+			elif (name == 'RIGHT'):
+				els = elements.loc[elements['type'].apply(lambda x: left_check.match(x)]
+				els = els.loc[els['step']== step ]
+				for i,els in els.iterrows():
+					s_def = s_def + f"\n{i+1}, S4,"
+			out = out + s_def + "\n"
+	return out

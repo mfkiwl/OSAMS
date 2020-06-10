@@ -1,32 +1,40 @@
 import pandas as pd
 import numpy as np
 
+from recalc_surf import *
 
-def out_step(elements,step_no,steps):
-	dt = 1
-	temp = steps.at[step_no,'BP_T']
-
+def out_step(elements,step_no,steps,BC_changes,deposition = True):
+	 
+	c_step = steps.loc[step_no]
+	dt = c_step['dt'] 
 	#HEADER FOR STEP DEFINITION BUILD 
 	#PLATE BOUNDRY CONDITIONS ENFORCED
 	s_out = f"""
 *STEP,NAME = STEP_{step_no}, INC= 20000, NLGEOM = YES
-*COUPLED TEMPERATURE-DISPLACEMENT,DELTMX = 2., CETOL= 1e-5
-0, 1, 1e-9,0.1
+*COUPLED TEMPERATURE-DISPLACEMENT,DELTMX = 10., CETOL= 1e-3
+0, {dt}, 1e-9,{dt}
 **SOLUTION TECHNIQUE, TYPE = {steps.at[step_no,'SOL_T']}
 *BOUNDARY, TYPE = DISPLACEMENT
 BUILD_PLATE, 1, 1 
 BUILD_PLATE, 2, 2 
 BUILD_PLATE, 3, 3 
-**BUILD_PLATE,11,11, {temp}
 """
-	deposition = True
 	if (deposition):
-		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}"
+		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}\n"
+		s_out = s_out + es
 #	for i in range(1,step_no):
 #		es = es + f",\nE_STEP_{i}"
-	s_out = s_out + es
-	s_out = s_out + """
-*RESTART, WRITE, FREQUENCY = 0
+
+	#list of boundry condition changes for this step
+	changes = BC_changes.loc[BC_changes['step'] == step_no]
+	for i,row in changes.iterrows():
+		#gets the name of the surface where the change occurs 
+		d_step = row['d_step']
+		side = row['side']
+		j = surf_cond(d_step,side,row['change'])
+		s_out = s_out + j
+
+	s_out = s_out + """*RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
 *END STEP
@@ -35,18 +43,20 @@ BUILD_PLATE, 3, 3
 
 	#ACTIVATES THE ELEMENT SETS FOR THIS SET
 
-def inital_step(elements,num_step,steps):
+def inital_step(elements,num_step,steps,surfaces):
 	temp = steps.at[0,'BP_T']
+	c_step = steps.loc[0]
+	dt = c_step['dt'] 
 	s_out = f"""
 *INITIAL CONDITIONS, TYPE = TEMPERATURE
-ALLNODES, 150.
+ALLNODES, 200.
 **INITIAL CONDITIONS, TYPE = TEMPERATURE
 **BUILD_PLATE, 60.
 *SURFACE, NAME = FREE_SURFACE, TYPE = ELEMENT
 ALLELEMENTS,
 *STEP,NAME = STEP_0, INC= 20000, NLGEOM = YES
-*COUPLED TEMPERATURE-DISPLACEMENT, DELTMX = 2., CETOL= 1e-5
-0, 1, 1e-9,0.1
+*COUPLED TEMPERATURE-DISPLACEMENT, DELTMX = 10., CETOL= 1e-3
+0, {dt}, 1e-9,{dt}
 **SOLUTION TECHNIQUE, TYPE = {steps.at[0,'SOL_T']}
 *BOUNDARY
 BUILD_PLATE, 1, 1 
@@ -54,15 +64,24 @@ BUILD_PLATE, 2, 2
 BUILD_PLATE, 3, 3  
 **BUILD_PLATE,11,11, {temp}
 *SFILM
-FREE_SURFACE, F, 40, 20
-*SFILM
-BUILD_SURFACE, F, 60.0, 1e6 
+FREE_SURFACE, F, 20, 40 
 """
 	es = "*MODEL CHANGE, REMOVE\n"
 	for i in range(1,num_step):
-		es = es + f"E_STEP_{i},\n"
+		if (steps.at[i,'TYPE'] == 'DEPOSITION'):
+			es = es + f"E_STEP_{i},\n"
+	
 	s_out = s_out + es
-	s_out = s_out + """
+
+	#sets all surfaces to be free surfaces
+	es = "*SFILM"
+	for i,row in surfaces.iterrows():
+		if (row['ref'] == -1):
+			es = es + f"\n{i[1]}_{i[0]}, F, {40}, {20}"
+		
+	s_out = s_out + f"""
+*SFILM
+BUILD_SURFACE, F, {temp}, 1e6 
 *RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT

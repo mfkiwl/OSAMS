@@ -1,16 +1,6 @@
 import numpy as np
 import pandas as pd
 
-"""
-this will handle all of the node merges and surface creation and modifictation
-
-"""
-
-def recalc(nodes,elements,steps,surfaces):
-	return 0
-	#find the surface the merged node belongs to
-
-	#change that surface to be a bond surface:
 
 	
 """
@@ -29,22 +19,22 @@ def surf_cond(step,side,cond):
 
 	if (cond == "free_surface"):
 		#sink temperature and convection cooefficent
-		fs_temp = 20
-		fs_h = 40
+		fs_temp = 20.0
+		fs_h = 40.0
 		s_def = s_def + (f" {fs_temp}, {fs_h}\n")
 		#radiation goes here
 
 	elif (cond == "hot_surface"):
 		#sink temperature and convection cooefficent
-		hs_temp = 20
-		hs_h = 40
+		hs_temp = 20.0
+		hs_h = 40.0
 		s_def = s_def + (f" {hs_temp}, {hs_h}\n")
 		#radiation goes here
 
 	elif (cond == "bond"):
 		#sink temperature and convection cooefficent
 		fs_temp = 20
-		fs_h = 0 
+		fs_h = 0.0 
 		s_def = s_def + (f" {fs_temp}, {fs_h}\n")
 		#radiation goes here
 	return s_def

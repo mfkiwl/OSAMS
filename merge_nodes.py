@@ -6,7 +6,7 @@ def replace(x,rp,rw):
 	return x
 """
 merge_nodes
-merges nodes with the same coordinates
+merges nodes with the same coordinates and handles changing of BCs
 args:
 	nodes:		dataframe of the nodes
 	step:		the nodes of the step that needs to be merged
@@ -14,8 +14,9 @@ args:
 returns:
 	nodes that were merged w/ one another
 """
-def merge_nodes(nodes,elements,step,tol = 0.00001):
+def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0001):
 	step_nodes = nodes.loc[lambda nodes: nodes['step'] == step]
+	lower_nodes = nodes.loc[nodes['step'] < step] 
 	print(step_nodes.index)
 
 	#goes through the nodes that have yet to be merged
@@ -26,20 +27,29 @@ def merge_nodes(nodes,elements,step,tol = 0.00001):
 	
 		#creates a list of nodes matching merge criteria
 		#if merge criteria correct then only one node should be in this
-		canidates = nodes.loc[nodes['X'].apply(close)]
+		canidates = lower_nodes.loc[nodes['X'].apply(close)]
 		canidates = canidates.loc[canidates.index != i]
-		#determines if nodes are close to the node to merge
-		if (canidates.shape[0]):
+
+		#can this node be merged?
+		if (canidates.shape[0] >= 1):
 			#if any nodes match the merge criteria, merge the first one
 			nodes = nodes.drop(i)
-			if (nodes['master'] != 'NO'):
-				"NOPE"
-				#GET SURFACE AT STEP N AND ORIENTATION
-				
 
-				#BC_changes.append({'ID': ID}, {'change': 'bond'}, {'step': step}, ignore_index = True)
+			#is there a slave surface associated with this node?
+			if (node['master'] != 'NO'):
+				m_node = canidates.iloc[0]
 
+				#deposition step and slave surface of the merged node
+				BC_change = [step,m_node['step'],m_node['master'],'bond']
+
+				#flags surface as redundant
+				surfaces.at[(step,node['master']),'ref'] = 1 
+
+				#appends change to BC changes
+				BC_changes.loc[len(BC_changes)] = BC_change
+
+			#remove all instances of the rundundant node
 			elements[['n1','n2' ,'n3','n4','n5','n6']] = elements[['n1','n2' ,'n3','n4','n5','n6']].replace(i,canidates.index[0])
-			print(f"MERGED {i} AND {canidates.index[0]}")
+			#print(f"MERGED {i} AND {canidates.index[0]}")
 
-	return nodes,elements
+	return nodes,elements,surfaces,BC_changes

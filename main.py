@@ -10,6 +10,7 @@ from def_mat import *
 from step_sets import *
 from merge_nodes import *
 from recalc_surf import *
+from analysis_step import *
 import itertools
 """
 show_mesh
@@ -66,6 +67,8 @@ def vects(nodes,center):
 	nodes.drop(['x','y','z'],axis = 1)
 	return nodes
 
+#Simulated Machine
+
 
 #loads the mesh cross section template 
 template_nodes = pd.read_excel("cross_nodes.xlsx",index_col = 'index')
@@ -83,72 +86,70 @@ elements = template_elements[0:0].copy()
 
 #TOOL PATH
 (x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,0,0,0.0004,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,0,0,0.0004,1,x0)
+
+x0 = np.array([0.0004,0,0.0002])
+(x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,1,0,0.0004,x0)
 (x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,1,0,0.0004,1,x0)
+
 #(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,2,0.02,0.002,2,x0)
 
-(x0,nodes,elements) = start_path(nodes,elements,template_nodes,template_elements,3,np.pi,0.0004,x0+np.array([0,0,0.0004]))
-(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,4,np.pi,0.0004,1,x0)
-print(nodes['step'])
-nodes,elements = merge_nodes(nodes,elements,5)
+x0 = np.array([0.0,0,0.0006])
+(x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,3,0,0.0004,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,3,0,0.0004,1,x0)
+
+x0 = np.array([0.0004,0,0.0006])
+(x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,4,0,0.0004,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,4,0,0.0004,1,x0)
+
 #plots the mesh
-show_mesh(elements,nodes)
-els = open("els.csv","w+")
-nodes.to_csv(els)
 #checks what nodes are at the build plate
 nodes = dsp(nodes)
 
+#DEPOSITION STEP PLACEHOLDER 
+place = [0,1,3,4]
+
 #LIST OF BOUNDARY CONDITION CHANGES
-cols = ['step','ID','change']
-changes = pd.DataFrame(columns = cols)
+cols = ['step','d_step','side','change']
+BC_changes = pd.DataFrame(columns = cols)
 
 #LIST OF SURFACES
 #index coloums of table of surfaces
-indx = list(itertools.product([0],['UP', 'DOWN', 'LEFT' , 'RIGHT']))
+#CREATE THING TO MAKE SURFACE DF
+
+indx = list(itertools.product(place,['UP', 'DOWN', 'LEFT' , 'RIGHT']))
 idx = pd.MultiIndex.from_tuples(indx,names = ['step','direction'])
-surf_cols = ['REF']
-surface_data = pd.DataFrame([0,1,2,3],index = idx,columns = surf_cols)
-print (surface_data)
+surf_cols = ['ref']
+surfaces = pd.DataFrame(index = idx,columns = surf_cols)
+surfaces['ref'] = -1
 
 
+#merges and recalculates BCs for all deposition steps
+for i in place:
+	(nodes,elements, surfaces, BC_changes) = analysis_step(nodes,elements,surfaces,BC_changes,i)
 
+#drops duplicate boundry conditions
+BC_changes = (BC_changes.drop_duplicates(['step','d_step', 'side', 'change']))
 
+inp_file = open('analysis.inp','w+')
 
-inp_file = open("analysis.inp","w+")
-#MERGES THE NODES
-merge_nodes(nodes,elements,3)
-merge_nodes(nodes,elements,4)
-
-#OUTPUTS EVERYTHING
 gen_inp = lambda x: inp_file.write(x)
+nodes = dsp(nodes)
+
 gen_inp(out_nodes(nodes))
 gen_inp(out_elements(elements,nodes))
-gen_inp(section())
 gen_inp(materiel_model())
-
-#EXTERNAL FREE SURFACES 
-
-#buildplate surface
-gen_inp(gensurf(elements,"BUILD_SURF",["DOWN"],step = [0,1]))
+gen_inp(section())
+gen_inp(build_surf(elements,steps))
+gen_inp(element_sets(elements,steps))
 gen_inp(n_set(nodes,"BUILD_PLATE"))
+gen_inp(gen_surf(elements,surfaces))
 
-#DEFINES STEPS
-gen_inp(element_sets(elements,[0,1,3,4]))
-#SURFACES FOR STEPS 
-gen_inp(surf_step(elements,"UP",0))
-gen_inp(surf_step(elements,"UP",1))
+gen_inp(inital_step(elements,5,steps,surfaces))
+gen_inp(out_step(elements,1,steps,BC_changes))
+gen_inp(out_step(elements,2,steps,BC_changes,deposition = False))
+gen_inp(out_step(elements,3,steps,BC_changes))
+gen_inp(out_step(elements,4,steps,BC_changes))
 
-#STEPS
-gen_inp(inital_step(elements,4,steps))
-gen_inp(surf_cond(0,"UP","free_surface"))
-gen_inp(surf_cond(1,"UP","free_surface"))
-gen_inp(out_step(elements,1,steps))
-gen_inp(out_step(elements,2,steps),deposition = False)
-gen_inp(surf_cond(1,"UP","bond"))
-gen_inp(out_step(elements,3,steps))
-gen_inp(surf_cond(0,"UP","bond"))
-gen_inp(out_step(elements,4,steps))
-
-
-
-
+#MERGES THE NODES
 inp_file.close()
