@@ -86,28 +86,28 @@ elements = template_elements[0:0].copy()
 
 #TOOL PATH
 (x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,0,0,0.0004,x0)
-(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,0,0,0.0004,1,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,0,0,0.00012,3,x0)
 
 x0 = np.array([0.0004,0,0.0002])
 (x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,1,0,0.0004,x0)
-(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,1,0,0.0004,1,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,1,0,0.0012,3,x0)
 
 #(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,2,0.02,0.002,2,x0)
 
 x0 = np.array([0.0,0,0.0006])
-(x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,3,0,0.0004,x0)
-(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,3,0,0.0004,1,x0)
+(x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,2,0,0.0004,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,2,0,0.00012,3,x0)
 
 x0 = np.array([0.0004,0,0.0006])
-(x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,4,0,0.0004,x0)
-(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,4,0,0.0004,1,x0)
+(x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,3,0,0.0004,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,3,0,0.00012,3,x0)
 
 #plots the mesh
 #checks what nodes are at the build plate
 nodes = dsp(nodes)
 
 #DEPOSITION STEP PLACEHOLDER 
-place = [0,1,3,4]
+place = [0,1,2,3]
 
 #LIST OF BOUNDARY CONDITION CHANGES
 cols = ['step','d_step','side','change']
@@ -145,11 +145,10 @@ gen_inp(element_sets(elements,steps))
 gen_inp(n_set(nodes,"BUILD_PLATE"))
 gen_inp(gen_surf(elements,surfaces))
 
-gen_inp(inital_step(elements,5,steps,surfaces))
+gen_inp(inital_step(elements,4,steps,surfaces))
 gen_inp(out_step(elements,1,steps,BC_changes))
-gen_inp(out_step(elements,2,steps,BC_changes,deposition = False))
+gen_inp(out_step(elements,2,steps,BC_changes))
 gen_inp(out_step(elements,3,steps,BC_changes))
-gen_inp(out_step(elements,4,steps,BC_changes))
 
 #MERGES THE NODES
 inp_file.close()

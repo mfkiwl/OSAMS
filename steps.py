@@ -15,9 +15,12 @@ def out_step(elements,step_no,steps,BC_changes,deposition = True):
 0, {dt}, 1e-9,{dt}
 **SOLUTION TECHNIQUE, TYPE = {steps.at[step_no,'SOL_T']}
 *BOUNDARY, TYPE = DISPLACEMENT
-BUILD_PLATE, 1, 1 
-BUILD_PLATE, 2, 2 
-BUILD_PLATE, 3, 3 
+1, 1, 1 
+1, 2, 2 
+1, 3, 3 
+3, 2, 2 
+3, 3, 3 
+10, 3, 3 
 """
 	if (deposition):
 		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}\n"
@@ -59,12 +62,14 @@ ALLELEMENTS,
 0, {dt}, 1e-9,{dt}
 **SOLUTION TECHNIQUE, TYPE = {steps.at[0,'SOL_T']}
 *BOUNDARY
-BUILD_PLATE, 1, 1 
-BUILD_PLATE, 2, 2 
-BUILD_PLATE, 3, 3  
+1, 1, 1 
+1, 2, 2 
+1, 3, 3  
+3, 2, 2 
+10, 3, 3  
 **BUILD_PLATE,11,11, {temp}
 *SFILM
-FREE_SURFACE, F, 20, 40 
+FREE_SURFACE, F, 20, 60
 """
 	es = "*MODEL CHANGE, REMOVE\n"
 	for i in range(1,num_step):
@@ -81,7 +86,7 @@ FREE_SURFACE, F, 20, 40
 		
 	s_out = s_out + f"""
 *SFILM
-BUILD_SURFACE, F, {temp}, 1e6 
+BUILD_SURFACE, F, {temp}, 87 
 *RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT

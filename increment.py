@@ -19,6 +19,7 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	num_n = nodes.shape[0]
 	num_ni = template_nodes.shape[0]
 	num_e = elements.shape[0]
+	print(step) 
 	
 	#copies the nodes
 	current_nodes = template_nodes[['type','ref','X','step','master']].copy()
@@ -30,6 +31,9 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	unit_vector = np.transpose(np.array([0,1,0])) * dist
 	VN = np.matmul(rotZ(dr),unit_vector)
 	x1 = x0 + VN
+	#location along the extrude path of the mid edge nodes
+	#12 = x0 + VN
+
 
 	#translates the nodes
 	current_nodes['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
@@ -37,7 +41,7 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 
 	current_elements = template_elements.copy()
 	# M  = 8 for 20 node
-	f4 = lambda x: x+num_n-(num_ni+8)
+	f4 = lambda x: x+num_n-num_ni
 	current_elements['n1'] = current_elements['n1'].apply(f4)
 	current_elements['n2'] = current_elements['n2'].apply(f4)
 	current_elements['n3'] = current_elements['n3'].apply(f4)
@@ -78,6 +82,7 @@ def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
 
 	current_elements = template_elements.copy()
 
+	current_elements['step'] = step
 	#vecrtorized for speed
 	#translates the template nodes to increment location
 	current_nodes0['X'] = template_nodes['V'].apply(lambda x: x0 + np.matmul(R,np.transpose(x)))
@@ -99,6 +104,7 @@ def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
 	nodes = pd.concat([nodes,current_nodes0],ignore_index = True)
 	nodes = pd.concat([nodes,current_nodes1],ignore_index = True)
 	elements = pd.concat([elements,current_elements],ignore_index = True)
+	print(elements)
 
 	return x1, nodes, elements
 """

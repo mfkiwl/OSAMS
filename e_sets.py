@@ -15,12 +15,11 @@ ARGS:
 def element_sets(elements,steps):
 	esets = "\n**ELEMENTS BY DEPOSISTION STEP"
 	for i,row in steps.iterrows():
-		print(i)
 		if (row['TYPE'] == 'DEPOSITION'):
 			#SELECTS ELEMENTS DEPOSITED FOR THAT STEP
 			step_elements = elements.loc[elements['step'] == i]
-			print(step_elements)
-			print("*********************************")
+			#print(step_elements)
+			#print("*********************************")
 
 			#HEADER AND FIRST ELEMENT
 			es_def = f"\n*ELSET, ELSET = E_STEP_{i}"
@@ -86,8 +85,8 @@ defines the build surface of the model
 def build_surf(elements,steps):
 	build_steps = steps.loc[steps['layer'] == 0]
 	build_steps = build_steps.index
-	print("BUILDING STEP")
-	print(build_steps)
+	#print("BUILDING STEP")
+	#print(build_steps)
 	s_def = f"\n*SURFACE, NAME = BUILD_SURFACE, TYPE=ELEMENT"
 	build_elements = elements.loc[elements['step'].isin(build_steps)]
 	build_elements = build_elements.loc[build_elements['type'] == 'DOWN']
@@ -110,7 +109,7 @@ def n_set(nodes,name,step = 10000):
 		s_def = s_def + f"{i+1},\n"
 	#s_def.join("\n")
 	return s_def
-
+1
 """
 Generates a surfaces based on where elements are in template
 args:
@@ -131,25 +130,26 @@ def gen_surf(elements,surfaces):
 			name = i[1]
 		
 			s_def = f"\n*SURFACE, NAME = {name}_{step}, TYPE=ELEMENT"
+
 			if (name == 'DOWN'):
-				els = elements.loc[elements['type'].apply(lambda x: down_check.match(x)]
+				els = elements.loc[elements['type'].apply(lambda x: bool(down_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
-					s_def = s_def + f"\n{i+1}, S1,"
+					s_def = s_def + f"\n{i+1},"
 			elif (name == 'UP'):
-				els = elements.loc[elements['type'].apply(lambda x: up_check.match(x)]
+				els = elements.loc[elements['type'].apply(lambda x: bool(up_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
-					s_def = s_def + f"\n{i+1}, S2,"
+					s_def = s_def + f"\n{i+1},"
 			elif (name == 'LEFT'):
-				els = elements.loc[elements['type'].apply(lambda x: left_check.match(x)]
+				els = elements.loc[elements['type'].apply(lambda x: bool(left_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
-					s_def = s_def + f"\n{i+1}, S6,"
+					s_def = s_def + f"\n{i+1},"
 			elif (name == 'RIGHT'):
-				els = elements.loc[elements['type'].apply(lambda x: left_check.match(x)]
+				els = elements.loc[elements['type'].apply(lambda x: bool(left_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
-					s_def = s_def + f"\n{i+1}, S4,"
+					s_def = s_def + f"\n{i+1},"
 			out = out + s_def + "\n"
 	return out
