@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+e_list = [f"n{i}" for i in range(1,21)]
 def replace(x,rp,rw):
 	if (x == rp):
 		x = rw
@@ -14,10 +15,11 @@ args:
 returns:
 	nodes that were merged w/ one another
 """
-def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0001):
+def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0000001):
+	#USE the TYPE to decrease number of nodes searched
 	step_nodes = nodes.loc[lambda nodes: nodes['step'] == step]
 	lower_nodes = nodes.loc[nodes['step'] < step] 
-	print(step_nodes.index)
+	#print(step_nodes.index)
 
 	#goes through the nodes that have yet to be merged
 	for i,node in step_nodes.iterrows():
@@ -43,13 +45,14 @@ def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0001):
 				BC_change = [step,m_node['step'],m_node['master'],'bond']
 
 				#flags surface as redundant
-				surfaces.at[(step,node['master']),'ref'] = 1 
+				
+				surfaces.loc[step, node['master']] = 1 
 
 				#appends change to BC changes
 				BC_changes.loc[len(BC_changes)] = BC_change
 
 			#remove all instances of the rundundant node
-			elements[['n1','n2' ,'n3','n4','n5','n6']] = elements[['n1','n2' ,'n3','n4','n5','n6']].replace(i,canidates.index[0])
+			elements[e_list] = elements[e_list].replace(i,canidates.index[0])
 			#print(f"MERGED {i} AND {canidates.index[0]}")
 
 	return nodes,elements,surfaces,BC_changes

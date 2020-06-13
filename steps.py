@@ -15,12 +15,9 @@ def out_step(elements,step_no,steps,BC_changes,deposition = True):
 0, {dt}, 1e-9,{dt}
 **SOLUTION TECHNIQUE, TYPE = {steps.at[step_no,'SOL_T']}
 *BOUNDARY, TYPE = DISPLACEMENT
-1, 1, 1 
-1, 2, 2 
-1, 3, 3 
-3, 2, 2 
-3, 3, 3 
-10, 3, 3 
+BUILD_PLATE, 1, 1 
+BUILD_PLATE, 2, 2 
+BUILD_PLATE, 3, 3 
 """
 	if (deposition):
 		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}\n"
@@ -40,6 +37,8 @@ def out_step(elements,step_no,steps,BC_changes,deposition = True):
 	s_out = s_out + """*RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
+*NODE OUTPUT, NSET = N2
+U
 *END STEP
 """
 	return s_out
@@ -55,21 +54,21 @@ def inital_step(elements,num_step,steps,surfaces):
 ALLNODES, 200.
 **INITIAL CONDITIONS, TYPE = TEMPERATURE
 **BUILD_PLATE, 60.
+*NSET, NSET = N2
+2
 *SURFACE, NAME = FREE_SURFACE, TYPE = ELEMENT
 ALLELEMENTS,
 *STEP,NAME = STEP_0, INC= 20000, NLGEOM = YES
 *COUPLED TEMPERATURE-DISPLACEMENT, DELTMX = 10., CETOL= 1e-3
 0, {dt}, 1e-9,{dt}
 **SOLUTION TECHNIQUE, TYPE = {steps.at[0,'SOL_T']}
-*BOUNDARY
-1, 1, 1 
-1, 2, 2 
-1, 3, 3  
-3, 2, 2 
-10, 3, 3  
+*BOUNDARY, TYPE = DISPLACEMENT
+BUILD_PLATE, 1, 1 
+BUILD_PLATE, 2, 2 
+BUILD_PLATE, 3, 3 
 **BUILD_PLATE,11,11, {temp}
 *SFILM
-FREE_SURFACE, F, 20, 60
+FREE_SURFACE, F, 20, 67
 """
 	es = "*MODEL CHANGE, REMOVE\n"
 	for i in range(1,num_step):
@@ -82,14 +81,16 @@ FREE_SURFACE, F, 20, 60
 	es = "*SFILM"
 	for i,row in surfaces.iterrows():
 		if (row['ref'] == -1):
-			es = es + f"\n{i[1]}_{i[0]}, F, {40}, {20}"
+			es = es + f"\n{i[1]}_{i[0]}, F, {20}, {67}"
 		
 	s_out = s_out + f"""
 *SFILM
-BUILD_SURFACE, F, {temp}, 87 
+BUILD_SURFACE, F, {temp}, 210 
 *RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
+*NODE OUTPUT, NSET = N2
+U
 *END STEP
 """
 	return s_out

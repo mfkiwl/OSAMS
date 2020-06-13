@@ -22,24 +22,19 @@ args:
 def show_mesh(elements,nodes):
 	fig = plt.figure()
 	ax = fig.gca(projection='3d')
-	X = nodes['X']
+	X = nodes['X'].values
+
 	print(X)
-	for i,element in elements.iterrows():
-		locs = np.array([X[element['n1']],
-						X[element['n2']],
-						X[element['n3']],
-						X[element['n4']],
-						X[element['n5']],
-						X[element['n6']]])
-		ax.plot(locs[:,0]*1000,locs[:,1]*1000,locs[:,2]*1000)
+
+	ax.scatter(X[:][0]*1000,X[:][1]*1000,X[:][2]*1000)
 	
 	zz, yy = np.meshgrid(np.linspace(-1,1), np.linspace(0,2))
 	xx = (yy * 0) 
 	#ax.plot_surface(xx, yy, zz, alpha=0.2)
-	ax.plot_surface(zz, yy, xx, alpha=0.2)
-	ax.set_xlim3d(-1,1)
-	ax.set_ylim3d(0,2)
-	ax.set_zlim3d(-1,1)	
+	#ax.plot_surface(zz, yy, xx, alpha=0.2)
+	#ax.set_xlim3d(-1,1)
+	#ax.set_ylim3d(0,2)
+	#ax.set_zlim3d(-1,1)	
 	ax.set_xlabel("x (mm)")
 	ax.set_ylabel("y (mm)")
 	ax.set_zlabel("z (mm)")
@@ -48,7 +43,6 @@ def show_mesh(elements,nodes):
 	#ax.view_init(elev=0., azim=90)
 	#ax.view_init(elev=45., azim=45)
 	plt.show()
-	
 
 """
 consolidates the x y z coloumns into a vector to make things easier
@@ -71,40 +65,45 @@ def vects(nodes,center):
 
 
 #loads the mesh cross section template 
-template_nodes = pd.read_excel("cross_nodes.xlsx",index_col = 'index')
-centerline = np.array([0.0002,0,0.0002])
+template_nodes = pd.read_excel("9BRICK.xlsx",sheet_name = 'NODES', index_col = 'index')
+centerline = np.array([0.00015,0,0.00015])
 template_nodes = vects(template_nodes,centerline)
-template_elements = pd.read_excel("cross_elements.xlsx",index_col = 'index')
+
+template_elements = pd.read_excel("9BRICK.xlsx",sheet_name = 'ELEMENTS', index_col = 'index')
 steps = pd.read_excel("steps.xlsx",index_col = "Step")
 #starts the process
 dr = 0
 #start of the path
-x0 = np.array([0,0,0.0002])
+x0 = [0,0,0.00015]
 nodes = template_nodes[['type','ref','X','step','master']].copy()
 nodes = nodes[0:0].copy()
 elements = template_elements[0:0].copy()
 
 #TOOL PATH
 (x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,0,0,0.0004,x0)
-(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,0,0,0.00012,3,x0)
-
-x0 = np.array([0.0004,0,0.0002])
+print(x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,0,0,0.0012,3,x0)
+print(x0)
+x0 = np.array([0.0003,0,0.00015])
 (x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,1,0,0.0004,x0)
 (x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,1,0,0.0012,3,x0)
 
 #(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,2,0.02,0.002,2,x0)
 
-x0 = np.array([0.0,0,0.0006])
+x0 = np.array([0.0003,0,0.00045])
 (x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,2,0,0.0004,x0)
-(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,2,0,0.00012,3,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,2,0,0.0012,3,x0)
 
-x0 = np.array([0.0004,0,0.0006])
+x0 = np.array([0.000,0,0.00045])
 (x0,nodes, elements) = start_path(nodes,elements,template_nodes,template_elements,3,0,0.0004,x0)
-(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,3,0,0.00012,3,x0)
+(x0,nodes, elements) = increment(nodes,elements,template_nodes,template_elements,3,0,0.0012,3,x0)
 
 #plots the mesh
 #checks what nodes are at the build plate
-nodes = dsp(nodes)
+
+#show_mesh(elements,nodes)
+
+print(out_elements(elements,nodes))
 
 #DEPOSITION STEP PLACEHOLDER 
 place = [0,1,2,3]
@@ -130,12 +129,12 @@ for i in place:
 
 #drops duplicate boundry conditions
 BC_changes = (BC_changes.drop_duplicates(['step','d_step', 'side', 'change']))
-
+print(BC_changes)
 inp_file = open('analysis.inp','w+')
 
 gen_inp = lambda x: inp_file.write(x)
 nodes = dsp(nodes)
-
+elements.to_csv('elm.csv')
 gen_inp(out_nodes(nodes))
 gen_inp(out_elements(elements,nodes))
 gen_inp(materiel_model())

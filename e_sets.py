@@ -1,10 +1,12 @@
 import pandas as pd
 import re 
 
+#PREVENTS RECOMPILING REGEX
 down_check = re.compile('.*DOWN.*')
 up_check = re.compile('.*UP.*')
 left_check = re.compile('.*LEFT.*')
 right_check = re.compile('.*RIGHT.*')
+e_list = [f"n{i}" for i in range(1,21)]
 
 """
 CREATES THE ELEMENT SET DEFINITIONS FOR THE INP FILE
@@ -55,12 +57,13 @@ args:
 	nodes:		dataframe of nodes
 """
 def out_elements(elements,nodes,step = 100000):
-	el_def = "*ELEMENT,ELSET = ALLELEMENTS, TYPE = C3D6T"
+	el_def = "*ELEMENT,ELSET = ALLELEMENTS, TYPE = C3D20T"
 	elements = elements.loc[elements['step'] < step]
 	for i,element in elements.iterrows():
-		e_nodes = element.loc[['n1','n2' ,'n3','n4','n5','n6']] + 1
-		el_def = el_def + (f"\n{i+1}\t,{e_nodes[0]}\t,{e_nodes[1]}\t,{e_nodes[2]}\t,{e_nodes[3]}\t,{e_nodes[4]}\t,{e_nodes[5]}")
-
+		e_nodes = element.loc[e_list]+ 1
+		el_def = el_def + f"\n{i+1}"
+		for j in range(0,20):
+			el_def = el_def + f",{e_nodes[j]}"
 	return el_def
 
 """
@@ -89,7 +92,6 @@ def build_surf(elements,steps):
 	#print(build_steps)
 	s_def = f"\n*SURFACE, NAME = BUILD_SURFACE, TYPE=ELEMENT"
 	build_elements = elements.loc[elements['step'].isin(build_steps)]
-	build_elements = build_elements.loc[build_elements['type'] == 'DOWN']
 	for i,row in build_elements.iterrows():
 		s_def = s_def + f"\n {i+1},"
 	return s_def
@@ -135,21 +137,21 @@ def gen_surf(elements,surfaces):
 				els = elements.loc[elements['type'].apply(lambda x: bool(down_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
-					s_def = s_def + f"\n{i+1},"
+					s_def = s_def + f"\n{i+1}, S5"
 			elif (name == 'UP'):
 				els = elements.loc[elements['type'].apply(lambda x: bool(up_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
-					s_def = s_def + f"\n{i+1},"
+					s_def = s_def + f"\n{i+1}, S3"
 			elif (name == 'LEFT'):
 				els = elements.loc[elements['type'].apply(lambda x: bool(left_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
-					s_def = s_def + f"\n{i+1},"
+					s_def = s_def + f"\n{i+1}, S6"
 			elif (name == 'RIGHT'):
 				els = elements.loc[elements['type'].apply(lambda x: bool(left_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
-					s_def = s_def + f"\n{i+1},"
+					s_def = s_def + f"\n{i+1}, S4"
 			out = out + s_def + "\n"
 	return out

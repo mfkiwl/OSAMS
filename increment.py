@@ -12,17 +12,26 @@ args:
 	step:				step this increment belongs to
 	dr:					extrusion angle	
 	dist:				element depth
+	x0:					location of the nozzle at the start of the path
 returns:
 	nothing
 """
+
 def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
 	num_n = nodes.shape[0]
 	num_ni = template_nodes.shape[0]
 	num_e = elements.shape[0]
-	print(step) 
 	
-	#copies the nodes
-	current_nodes = template_nodes[['type','ref','X','step','master']].copy()
+	#copies the face nodes 
+	face_nodes = template_nodes[['type','ref','X','step','master']].copy()
+
+	#nodes for the edges 17-20
+	edge_template = template_nodes.loc[template_nodes['corner'] == 'YES']
+
+	edge_nodes = edge_template[['type','ref','X','step','master']].copy()
+
+	#number of edge nodes
+	num_en = edge_nodes.shape[0]
 
 	#centroid at end of step: 	x1
 	#centroid at start of step:	x0	
@@ -31,28 +40,45 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	unit_vector = np.transpose(np.array([0,1,0])) * dist
 	VN = np.matmul(rotZ(dr),unit_vector)
 	x1 = x0 + VN
-	#location along the extrude path of the mid edge nodes
-	#12 = x0 + VN
 
+	#location along the extrude path of the mid edge nodes
+	x12 = x0 + VN/2
 
 	#translates the nodes
-	current_nodes['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
-	current_nodes['step'] = step
+	face_nodes['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
+	#print(template_nodes[['x','y','z']].dot(np.transpose(R)))
+	#print(face_nodes['X'])
+
+	#translates the edge nodes
+	edge_nodes['X'] = edge_template['V'].apply(lambda x: x12 + np.matmul(R,np.transpose(x)))
 
 	current_elements = template_elements.copy()
 	# M  = 8 for 20 node
-	f4 = lambda x: x+num_n-num_ni
-	current_elements['n1'] = current_elements['n1'].apply(f4)
-	current_elements['n2'] = current_elements['n2'].apply(f4)
-	current_elements['n3'] = current_elements['n3'].apply(f4)
+	#nodes of exisiting face 
+	f4 = lambda x: x+num_n-(num_ni+num_en)
+	current_elements['n1'] = 	current_elements['n1'] .apply(f4)
+	current_elements['n2'] = 	current_elements['n2'] .apply(f4)
+	current_elements['n3'] = 	current_elements['n3'] .apply(f4)
+	current_elements['n4'] = 	current_elements['n4'] .apply(f4)
+	current_elements['n9'] = 	current_elements['n9'] .apply(f4)
+	current_elements['n10'] = 	current_elements['n10'].apply(f4)
+	current_elements['n11'] = 	current_elements['n11'].apply(f4)
+	current_elements['n12'] = 	current_elements['n12'].apply(f4)
 
+	#new face
 	f4 = lambda x: x+num_n
-	current_elements['n4'] = current_elements['n4'].apply(f4)
-	current_elements['n5'] = current_elements['n5'].apply(f4)
-	current_elements['n6'] = current_elements['n6'].apply(f4)
+	new_nodes = ['n5','n6','n7','n8','n13','n14','n15','n16']
+	current_elements[new_nodes] = current_elements[new_nodes].apply(f4)
+
+	#mid edge nodes 
+	f4 = lambda x: x+num_n+(num_ni)
+	new_nodes = ['n17','n18','n19','n20']
+	current_elements[new_nodes] = current_elements[new_nodes].apply(f4)
 
 	#sets process step
 	current_elements['step'] = step
+	current_nodes=pd.concat([face_nodes,edge_nodes], ignore_index = True)
+	current_nodes['step'] = step
 
 	#changes the node indexes of the mesh_increment
 	nodes.append(current_nodes)
@@ -61,13 +87,21 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	return x1, nodes, elements
 
 def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
-	#creates nodes for the path start
-	current_nodes0 = template_nodes[['type','ref','X','step','master']].copy()
-	current_nodes1 = template_nodes[['type','ref','X','step','master']].copy()
-
-	#gets the size of the template and current nodes
-	temp_num = current_nodes0.shape[0]
 	num_n = nodes.shape[0]
+	num_ni = template_nodes.shape[0]
+	num_e = elements.shape[0]
+	
+	#copies the face nodes 
+	face_nodes0 = template_nodes[['type','ref','X','step','master']].copy()
+	face_nodes1 = template_nodes[['type','ref','X','step','master']].copy()
+
+	#nodes for the edges 17-20
+	edge_template = template_nodes.loc[template_nodes['corner'] == 'YES']
+
+	edge_nodes = edge_template[['type','ref','X','step','master']].copy()
+
+	#number of edge nodes
+	num_en = edge_nodes.shape[0]
 
 	#centroid at end of step: 	x1
 	#centroid at start of step:	x0	
@@ -76,37 +110,49 @@ def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
 	unit_vector = np.transpose(np.array([0,1,0])) * dist
 	VN = np.matmul(rotZ(dr),unit_vector)
 	x1 = x0 + VN
-	
-	current_nodes0['step'] = step
-	current_nodes1['step'] = step
+
+	#location along the extrude path of the mid edge nodes
+	x12 = x0 + VN/2
+
+	#translates the nodes
+	face_nodes0['X'] = template_nodes['V'].apply(lambda x: x0 + np.matmul(R,np.transpose(x)))
+	face_nodes1['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
+
+	#translates the edge nodes
+	edge_nodes['X'] = edge_template['V'].apply(lambda x: x12 + np.matmul(R,np.transpose(x)))
 
 	current_elements = template_elements.copy()
-
-	current_elements['step'] = step
-	#vecrtorized for speed
-	#translates the template nodes to increment location
-	current_nodes0['X'] = template_nodes['V'].apply(lambda x: x0 + np.matmul(R,np.transpose(x)))
-	current_nodes1['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
-
-	
-	#creates the elements
+	# M  = 8 for 20 node
+	#nodes of exisiting face 
 	f4 = lambda x: x+num_n
-	current_elements['n1'] = current_elements['n1'].apply(f4)
-	current_elements['n2'] = current_elements['n2'].apply(f4)
-	current_elements['n3'] = current_elements['n3'].apply(f4)
+	current_elements['n1'] = 	current_elements['n1'] .apply(f4)
+	current_elements['n2'] = 	current_elements['n2'] .apply(f4)
+	current_elements['n3'] = 	current_elements['n3'] .apply(f4)
+	current_elements['n4'] = 	current_elements['n4'] .apply(f4)
+	current_elements['n9'] = 	current_elements['n9'] .apply(f4)
+	current_elements['n10'] = 	current_elements['n10'].apply(f4)
+	current_elements['n11'] = 	current_elements['n11'].apply(f4)
+	current_elements['n12'] = 	current_elements['n12'].apply(f4)
 
-	f4 = lambda x: x+temp_num+num_n
-	current_elements['n4']=current_elements['n4'].apply(f4)
-	current_elements['n5']=current_elements['n5'].apply(f4)
-	current_elements['n6']=current_elements['n6'].apply(f4)
+	#new face
+	f4 = lambda x: x+num_n+num_ni
+	new_nodes = ['n5','n6','n7','n8','n13','n14','n15','n16']
+	current_elements[new_nodes] = current_elements[new_nodes].apply(f4)
+
+	#mid edge nodes 
+	f4 = lambda x: x+num_n+(num_ni+num_ni)
+	new_nodes = ['n17','n18','n19','n20']
+	current_elements[new_nodes] = current_elements[new_nodes].apply(f4)
+
+	current_nodes = pd.concat([face_nodes0,face_nodes1,edge_nodes],ignore_index = True)
+	current_nodes['step'] = step
 	current_elements['step'] = step
-
-	nodes = pd.concat([nodes,current_nodes0],ignore_index = True)
-	nodes = pd.concat([nodes,current_nodes1],ignore_index = True)
+	
+	nodes = pd.concat([nodes,current_nodes],ignore_index = True)
 	elements = pd.concat([elements,current_elements],ignore_index = True)
-	print(elements)
 
 	return x1, nodes, elements
+
 """
 rotates about the GLOBAL z axis
 args:
@@ -119,6 +165,7 @@ def rotZ(theta):
 				  [np.sin(theta),	np.cos(theta), 0],
 				  [0,0,1]])
 	return R
+
 """
 increment:
 steps the mesh by one process step
@@ -138,12 +185,12 @@ returns:
 """
 def increment(nodes,elements,template_nodes,template_elements,step,dr,dist,m_inc,x0):
 	inc_dist = dist/m_inc
-	n_nodes = template_nodes.shape[0]
+	n_nodes = int(template_nodes.shape[0] + 16)
 	for i in range(0,m_inc):
 		(x0,nodes,elements) = mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,inc_dist,x0) 
 	
 	#makes nodes at the end of the extrusion step not master nodes
-	nodes[-n_nodes:-1]['master'] = 'NO'
+	nodes.iloc[-n_nodes:-1]['master'] = 'NO'
 	return x0,nodes,elements
 
 
