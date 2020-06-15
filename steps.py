@@ -44,6 +44,8 @@ U
 	return s_out
 
 	#ACTIVATES THE ELEMENT SETS FOR THIS SET
+#def remove_plate(step,surface,surfaces):
+	
 
 def inital_step(elements,num_step,steps,surfaces):
 	temp = steps.at[0,'BP_T']
@@ -67,8 +69,6 @@ BUILD_PLATE, 1, 1
 BUILD_PLATE, 2, 2 
 BUILD_PLATE, 3, 3 
 **BUILD_PLATE,11,11, {temp}
-*SFILM
-FREE_SURFACE, F, 20, 67
 """
 	es = "*MODEL CHANGE, REMOVE\n"
 	for i in range(1,num_step):
@@ -79,13 +79,18 @@ FREE_SURFACE, F, 20, 67
 
 	#sets all surfaces to be free surfaces
 	es = "*SFILM"
+	#print(surfaces)
 	for i,row in surfaces.iterrows():
+		print(row)
 		if (row['ref'] == -1):
 			es = es + f"\n{i[1]}_{i[0]}, F, {20}, {67}"
-		
+	
+	#COMMITS setting all freee surface
+	s_out = s_out + es
+
 	s_out = s_out + f"""
 *SFILM
-BUILD_SURFACE, F, {temp}, 210 
+BUILD_SURFACE, F, {temp}, 10
 *RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT

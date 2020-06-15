@@ -92,10 +92,12 @@ def build_surf(elements,steps):
 	#print(build_steps)
 	s_def = f"\n*SURFACE, NAME = BUILD_SURFACE, TYPE=ELEMENT"
 	build_elements = elements.loc[elements['step'].isin(build_steps)]
+	build_elements = build_elements.loc[build_elements['DOWN'] != 'NO']
 	for i,row in build_elements.iterrows():
-		s_def = s_def + f"\n {i+1},"
+		s_def = s_def + f"\n {i+1}, {row['DOWN']}"
 	return s_def
 		
+
 
 """
 outputs the node sets
@@ -111,7 +113,6 @@ def n_set(nodes,name,step = 10000):
 		s_def = s_def + f"{i+1},\n"
 	#s_def.join("\n")
 	return s_def
-1
 """
 Generates a surfaces based on where elements are in template
 args:
@@ -149,7 +150,7 @@ def gen_surf(elements,surfaces):
 				for i,els in els.iterrows():
 					s_def = s_def + f"\n{i+1}, S6"
 			elif (name == 'RIGHT'):
-				els = elements.loc[elements['type'].apply(lambda x: bool(left_check.match(x)))]
+				els = elements.loc[elements['type'].apply(lambda x: bool(right_check.match(x)))]
 				els = els.loc[els['step']== step ]
 				for i,els in els.iterrows():
 					s_def = s_def + f"\n{i+1}, S4"

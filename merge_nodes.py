@@ -17,7 +17,8 @@ returns:
 """
 def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0000001):
 	#USE the TYPE to decrease number of nodes searched
-	step_nodes = nodes.loc[lambda nodes: nodes['step'] == step]
+	step_nodes = nodes.loc[nodes['step'] == step]
+	step_nodes = step_nodes.loc[step_nodes['type'] == 'SURFACE']
 	lower_nodes = nodes.loc[nodes['step'] < step] 
 	#print(step_nodes.index)
 

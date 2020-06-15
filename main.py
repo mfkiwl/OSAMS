@@ -123,12 +123,19 @@ surfaces = pd.DataFrame(index = idx,columns = surf_cols)
 surfaces['ref'] = -1
 
 
+print(surfaces)
+layer_1_steps = steps.loc[steps['layer'] == 0]
+layer_1_steps = layer_1_steps.index
+surfaces.loc[(layer_1_steps,'DOWN'),'ref'] = 1
 #merges and recalculates BCs for all deposition steps
 for i in place:
 	(nodes,elements, surfaces, BC_changes) = analysis_step(nodes,elements,surfaces,BC_changes,i)
 
 #drops duplicate boundry conditions
 BC_changes = (BC_changes.drop_duplicates(['step','d_step', 'side', 'change']))
+#Makes surfaces on the bottom surface redundant
+
+
 print(BC_changes)
 inp_file = open('analysis.inp','w+')
 
