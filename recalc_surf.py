@@ -16,6 +16,7 @@ BC CATS:
 """
 def surf_cond(step,side,cond):
 	s_def = f"*SFILM\n{side}_{step}, F,"
+	print(side)
 
 	if (cond == "free_surface"):
 		#sink temperature and convection cooefficent

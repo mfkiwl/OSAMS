@@ -1,7 +1,20 @@
 import pandas as pd
 import numpy as np
 from increment import *
+"""
+this file is responsible for creating nodes, and renumbering elements nodes and extruding the mesh on an element level
+""" 
 
+x_hat = np.array([1,0,0])
+def average_angle(theta1,theta2):
+	U1 =  np.array([np.cos(theta1), np.sin(theta1),0])
+	U2 =  np.array([np.cos(theta2), np.sin(theta2),0])
+	U = (U1+ U2)/2
+	return angle_between(x_hat,U)
+
+def angle_between(v1, v2):
+	theta = (np.arctan2(np.cross(v1,v2),np.dot(v1,v2))[2])
+	return theta
 """
 extrudes the template cross section by a single element in a path
 args:
@@ -10,14 +23,16 @@ args:
 	tempplate_nodes: 	dataframe of nodes of the template
 	element_nodes:		dataframe of elements of the current template
 	step:				step this increment belongs to
-	dr:					extrusion angle	
+	d0:					extrusion angle at start 
+	dr:					extrusion angle	at end
 	dist:				element depth
 	x0:					location of the nozzle at the start of the path
 returns:
-	nothing
+	nodes:				dataframe of nodes
+	elements:			dataframe of elements
 """
 
-def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
+def mesh_extrude(nodes,elements,template_nodes,template_elements,step,d0,dr,x0,x12,x1):
 	num_n = nodes.shape[0]
 	num_ni = template_nodes.shape[0]
 	num_e = elements.shape[0]
@@ -37,20 +52,17 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	#centroid at start of step:	x0	
 	#rotates the face of the extrusion
 	R = rotZ(dr)
-	unit_vector = np.transpose(np.array([0,1,0])) * dist
-	VN = np.matmul(rotZ(dr),unit_vector)
-	x1 = x0 + VN
+
+	R2 = rotZ(average_angle(dr,d0))
 
 	#location along the extrude path of the mid edge nodes
-	x12 = x0 + VN/2
-
 	#translates the nodes
 	face_nodes['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
 	#print(template_nodes[['x','y','z']].dot(np.transpose(R)))
 	#print(face_nodes['X'])
 
 	#translates the edge nodes
-	edge_nodes['X'] = edge_template['V'].apply(lambda x: x12 + np.matmul(R,np.transpose(x)))
+	edge_nodes['X'] = edge_template['V'].apply(lambda x: x12 + np.matmul(R2,np.transpose(x)))
 
 	current_elements = template_elements.copy()
 	# M  = 8 for 20 node
@@ -84,9 +96,12 @@ def mesh_extrude(nodes,elements,template_nodes,template_elements,step,dr,dist,x0
 	nodes.append(current_nodes)
 	elements = pd.concat([elements,current_elements],ignore_index = True)
 	nodes = pd.concat([nodes,current_nodes],ignore_index = True)
-	return x1, nodes, elements
+	return  nodes, elements
 
-def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
+"""
+creates a new filament
+"""
+def start_path(nodes,elements,template_nodes,template_elements,step,dr,x0,x1):
 	num_n = nodes.shape[0]
 	num_ni = template_nodes.shape[0]
 	num_e = elements.shape[0]
@@ -106,13 +121,10 @@ def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
 	#centroid at end of step: 	x1
 	#centroid at start of step:	x0	
 	#rotates the face of the extrusion
-	R = rotZ(dr)
-	unit_vector = np.transpose(np.array([0,1,0])) * dist
-	VN = np.matmul(rotZ(dr),unit_vector)
-	x1 = x0 + VN
+	R = rotZ(dr)  
 
 	#location along the extrude path of the mid edge nodes
-	x12 = x0 + VN/2
+	x12 = (x0 + x1)/2
 
 	#translates the nodes
 	face_nodes0['X'] = template_nodes['V'].apply(lambda x: x0 + np.matmul(R,np.transpose(x)))
@@ -151,7 +163,7 @@ def start_path(nodes,elements,template_nodes,template_elements,step,dr,dist,x0):
 	nodes = pd.concat([nodes,current_nodes],ignore_index = True)
 	elements = pd.concat([elements,current_elements],ignore_index = True)
 
-	return x1, nodes, elements
+	return nodes, elements
 
 """
 rotates about the GLOBAL z axis
@@ -168,6 +180,7 @@ def rotZ(theta):
 
 """
 increment:
+DEPRECATED 
 steps the mesh by one process step
 one process step is one .INP file
 args:

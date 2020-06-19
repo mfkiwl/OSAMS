@@ -17,7 +17,7 @@ ARGS:
 def element_sets(elements,steps):
 	esets = "\n**ELEMENTS BY DEPOSISTION STEP"
 	for i,row in steps.iterrows():
-		if (row['TYPE'] == 'DEPOSITION'):
+		if (row['type'] == 1):
 			#SELECTS ELEMENTS DEPOSITED FOR THAT STEP
 			step_elements = elements.loc[elements['step'] == i]
 			#print(step_elements)

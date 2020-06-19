@@ -37,10 +37,10 @@ def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0000001):
 		if (canidates.shape[0] >= 1):
 			#if any nodes match the merge criteria, merge the first one
 			nodes = nodes.drop(i)
+			m_node = canidates.iloc[0]
 
 			#is there a slave surface associated with this node?
-			if (node['master'] != 'NO'):
-				m_node = canidates.iloc[0]
+			if (node['master'] != 'NO' and m_node['master'] != 0):
 
 				#deposition step and slave surface of the merged node
 				BC_change = [step,m_node['step'],m_node['master'],'bond']
@@ -48,6 +48,7 @@ def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0000001):
 				#flags surface as redundant
 				
 				surfaces.loc[step, node['master']] = 1 
+				print(node['master'])
 
 				#appends change to BC changes
 				BC_changes.loc[len(BC_changes)] = BC_change

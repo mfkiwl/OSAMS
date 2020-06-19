@@ -5,7 +5,7 @@ from recalc_surf import *
 
 def out_step(elements,step_no,steps,BC_changes,deposition = True):
 	 
-	c_step = steps.loc[step_no]
+	c_step = steps.iloc[step_no]
 	dt = c_step['dt'] 
 	#HEADER FOR STEP DEFINITION BUILD 
 	#PLATE BOUNDRY CONDITIONS ENFORCED
@@ -19,7 +19,7 @@ BUILD_PLATE, 1, 1
 BUILD_PLATE, 2, 2 
 BUILD_PLATE, 3, 3 
 """
-	if (deposition):
+	if (steps.iloc[step_no]['type']):
 		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}\n"
 		s_out = s_out + es
 #	for i in range(1,step_no):
@@ -72,7 +72,7 @@ BUILD_PLATE, 3, 3
 """
 	es = "*MODEL CHANGE, REMOVE\n"
 	for i in range(1,num_step):
-		if (steps.at[i,'TYPE'] == 'DEPOSITION'):
+		if (steps.at[i,'type'] == 1):
 			es = es + f"E_STEP_{i},\n"
 	
 	s_out = s_out + es
@@ -90,7 +90,7 @@ BUILD_PLATE, 3, 3
 
 	s_out = s_out + f"""
 *SFILM
-BUILD_SURFACE, F, {temp}, 10
+BUILD_SURFACE, F, {60}, 210
 *RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT

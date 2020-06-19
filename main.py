@@ -141,7 +141,6 @@ inp_file = open('analysis.inp','w+')
 
 gen_inp = lambda x: inp_file.write(x)
 nodes = dsp(nodes)
-elements.to_csv('elm.csv')
 gen_inp(out_nodes(nodes))
 gen_inp(out_elements(elements,nodes))
 gen_inp(materiel_model())
