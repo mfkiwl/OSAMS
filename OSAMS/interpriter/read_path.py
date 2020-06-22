@@ -34,6 +34,7 @@ def read_path(g_code):
 	fan_speeds = [0.0] 
 	bed_temperatures = [0.0]
 	distances = [0.0]
+	enclosures = [20.0]
 	layers = 0.0
 
 	#PERSISTENT MACHINE STATE
@@ -43,6 +44,7 @@ def read_path(g_code):
 	bed_temperature = 0.0
 	temperature = 0.0
 	total_distance = 0.0
+	enclosure = 20.0
 	layer = 0.0
 
 
@@ -88,6 +90,7 @@ def read_path(g_code):
 			fan_speeds.append(fan_speed)
 			total_distance += D
 			distances.append(total_distance)
+			enclosures.append(enclosure)
 
 			path = np.append(path,position)
 		
@@ -149,6 +152,7 @@ def read_path(g_code):
 			arc_inc = arc_inc + 1
 			extruding = extruding + [1] * arc_inc 
 			temperatures = temperatures + [temperature] * arc_inc
+			enclosures = enclosures + [enclosure] * arc_inc
 			bed_temperatures = bed_temperatures + [bed_temperature] * arc_inc
 			fan_speeds = fan_speeds + [fan_speed] * arc_inc
 
@@ -168,6 +172,7 @@ def read_path(g_code):
 			path = np.append(path,position)
 			times.append(time)
 			distances.append(total_distance)
+			enclosures.append(enclosure)
 			extruding.append(0)
 	
 		elif (words[0] == 'M106'):
@@ -179,6 +184,7 @@ def read_path(g_code):
 			path = np.append(path,position)
 			times.append(time)
 			distances.append(total_distance)
+			enclosures.append(enclosure)
 			extruding.append(0)
 
 		elif (words[0] == 'M140'):
@@ -190,6 +196,7 @@ def read_path(g_code):
 			path = np.append(path,position)
 			times.append(time)
 			distances.append(total_distance)
+			enclosures.append(enclosure)
 			extruding.append(0)
 
 		#DWELL
@@ -203,11 +210,24 @@ def read_path(g_code):
 
 			#UPDATES MACHINE STATE
 			bed_temperatures.append(bed_temperature)
+			enclosures.append(enclosure)
 			temperatures.append(temperature)
 			fan_speeds.append(fan_speed)
 			path = np.append(path,position)
 			times.append(time)
 			distances.append(total_distance)
+
+		elif (words[0] == 'C2'):
+			enclosure = float(words[1][1:])
+			bed_temperatures.append(bed_temperature)
+			enclosures.append(enclosure)
+			temperatures.append(temperature)
+			fan_speeds.append(fan_speed)
+			path = np.append(path,position)
+			times.append(time)
+			distances.append(total_distance)
+			
+	
 	pa = np.transpose(np.array([distances,times,temperatures,fan_speeds,bed_temperatures,extruding]))
 	
 

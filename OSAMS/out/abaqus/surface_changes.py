@@ -14,21 +14,21 @@ BC CATS:
 	hot_surface:	forced convection
 	bond:			bond surface no heat transfer with the enviroment
 """
-def surf_cond(step,side,cond):
+def surf_cond(step,side,cond,model):
 	s_def = f"*SFILM\n{side}_{step}, F,"
 	print(side)
 
 	if (cond == "free_surface"):
 		#sink temperature and convection cooefficent
-		fs_temp = 20.0
-		fs_h = 67 
+		fs_temp = model['enclosure']
+		fs_h = model['h_nat']
 		s_def = s_def + (f" {fs_temp}, {fs_h}\n")
 		#radiation goes here
 
 	elif (cond == "hot_surface"):
-		#sink temperature and convection cooefficent
-		hs_temp = 20.0
-		hs_h = 67
+		#sink temperature and convection cooefficen
+		hs_temp = model['enclosure']
+		hs_h = model['h_fan']
 		s_def = s_def + (f" {hs_temp}, {hs_h}\n")
 		#radiation goes here
 

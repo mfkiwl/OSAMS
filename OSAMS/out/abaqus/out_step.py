@@ -1,6 +1,6 @@
 from .surface_changes import *
 
-def out_step(elements,step_no,steps,BC_changes):
+def out_step(elements,step_no,steps,BC_changes,model):
 	 
 	c_step = steps.iloc[step_no]
 	dt = c_step['dt'] 
@@ -28,7 +28,7 @@ BUILD_PLATE, 3, 3
 		#gets the name of the surface where the change occurs 
 		d_step = row['d_step']
 		side = row['side']
-		j = surf_cond(d_step,side,row['change'])
+		j = surf_cond(d_step,side,row['change'],model)
 		s_out = s_out + j
 
 	s_out = s_out + """*RESTART, WRITE, FREQUENCY = 0

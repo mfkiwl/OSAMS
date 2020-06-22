@@ -1,5 +1,5 @@
-def inital_step(elements,num_step,steps,surfaces):
-	temp = steps.at[0,'BP_T']
+def inital_step(elements,num_step,steps,surfaces,model):
+	temp = model['plate']
 	c_step = steps.loc[0]
 	dt = c_step['dt'] 
 	s_out = f"""
@@ -35,14 +35,14 @@ BUILD_PLATE, 3, 3
 	for i,row in surfaces.iterrows():
 		print(row)
 		if (row['ref'] == -1):
-			es = es + f"\n{i[1]}_{i[0]}, F, {20}, {67}"
+			es = es + f"\n{i[1]}_{i[0]}, F, {model['enclosure']}, {model['h_nat']}"
 	
 	#COMMITS setting all freee surface
 	s_out = s_out + es
 
 	s_out = s_out + f"""
 *SFILM
-BUILD_SURFACE, F, {60}, 210
+BUILD_SURFACE, F, {temp}, {model['plate']}
 *RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
