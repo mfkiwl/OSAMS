@@ -1,0 +1,5 @@
+Open Source Additive Manufacturing Simulator (OSAMS)
+Copyright 2020 Christopher Bock
+This product incudes software developed by Christopher Bock
+
+ABAQUS is a registered trademark of Dassault Systemes Simulia Corp
