@@ -1,37 +1,26 @@
-NODES:
-	NODE TYPES:
-		BUILD_PLATE:	belongs to the build plate so zero displacement
-		FREE_SURFACE:	nodes on the outside of the part 
-		INTERIEOR:		nodes on interior voids
-		MERGED:			nodes that experienced a MERGE operation and will be able to have interface strength predicted given temperature data throughout the step
+Open Source Addittive Manufacturing Simulator (OSAMS)
 
-SETS:
-	NODE SETS:
-		BUILD_PLATE:	nodes that are on the build plate (constant for all STEP)
-	
-	ELEMENT SETS:
-		E_STEP_{N}:		elements that are deposited during STEP {N}
-SURFACES:
-	{N}_{DIRECTION}:	the {DIRECTION} surface extruded in STEP {N}
+(c) 2020 Christopher C. Bock
 
-	
-ELEMENTS
-	elements are organized by the STEP they are are deposited in
+This is a python package that creates models of the additive manufacturing process
 
-STEPS:
+The OSAMS folder contains the actual package, everything else is extras
 
-all STEP correspond to a stepin the ABAQUS analysis
-
-change STEP options by changing values in steps.CSV
-OPTIONS:
-	DT: 		The length of time the STEP occurs over
-	BP_T:		The Build Plate Temperature at the start of the step
-	SOL_T:		the solution technique for the step (SEPARATED or)
-	enclosure:	The enclosure temperature
-	h_nat:		the convection cooefficent for FREE surfaces
-	fan:		convection cooeffcient for HOT surfaces = h_nat*(1+fan}
-
-
-
+comments:
+most functions are commented like so
+"""
+my_funct
+this returns the sum and difference of two numbers
+args:
+	a:	first number
+	b:	second number
+returns:
+	c:	sum of the numbers
+	d:	difference of the numbers
+"""
+def my_funct(a,b)
+	c = a+b		c: sum of a and b
+	d = a-b
+	return(c,d)
 
 

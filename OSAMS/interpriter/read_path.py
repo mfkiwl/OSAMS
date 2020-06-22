@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from pygcode import Machine, GCodeRapidMove 
 
 """
 angle between two vectors 
@@ -58,7 +57,9 @@ def read_path(g_code):
 	for i in cmds:
 		words = i.split()
 		#LINEAR MOVE
-		if (words[0] == "G1" or words[0] == "G0"):
+		if (words[0][0] == ";"):
+			pass
+		elif (words[0] == "G1" or words[0] == "G0"):
 			extruding.append(int(words[0][1]))
 			P1 = position.copy()
 
@@ -134,9 +135,6 @@ def read_path(g_code):
 			D = np.abs(thetas - theta1)*R
 
 			ex_times = (D/feed_speed) + time
-			print(theta1)
-			print(theta2)
-			print(thetas)
 
 			#UPDATES MACHINE STATES
 			distances = distances + list(D+total_distance)
@@ -156,7 +154,6 @@ def read_path(g_code):
 
 			#moves tool head
 			position = P3
-			print(position)
 			path = np.append(path,R1)
 			path = np.append(path,P3)
 

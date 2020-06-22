@@ -1,5 +1,3 @@
-import pandas as pd
-
 
 def materiel_model():
 	return ("""
@@ -18,7 +16,7 @@ def materiel_model():
 ** 0.01,  0., 0.1
 ** 0.35,  0.,  1.
 ** 0.24,  0.,  7.
-**0.21,  0.,100.
+**0.21,  1.,100.
 **Trs
 **108.,  8.86, 101.6""")
 

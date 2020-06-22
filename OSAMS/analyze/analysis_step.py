@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from merge_nodes import *
+from .merge_nodes import *
 """
 generates everything short of the INP lines
 args:

@@ -72,7 +72,7 @@ args:
 	nodes:	nodes of the surface
 	name:	name of the nodes where this belongs to 
 """
-def out_surf(nodes,name,step =  100000):
+def dut_surf(nodes,name,step =  100000):
 	s_def = f"\n*SURFACE, NAME = {name}, TYPE=ELEMENT"
 	s_def = s_def + f"\n ALLELEMENTS,"
 	cn = nodes.loc[nodes['type'] == name]

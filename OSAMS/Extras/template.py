@@ -5,6 +5,10 @@ this file is responsible for fetching and preprocessing the template mesh
 """
 
 centerline = np.array([0,0,0])		#centerline: the xy coordinate of the centerline of the mesh (NORMALLY ZERO) also dictates the rotation of the mesh
+
+
+
+
 """
 consolidates the x y z coloumns into a vector to make things easier
 creates a vector from the template nodes to the centerline of the filament

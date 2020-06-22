@@ -3,12 +3,11 @@ import pandas as pd
 from scipy.interpolate import *
 import math
 import matplotlib.pyplot as plt
-from g_code_path import *
 
 #fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 #layer_z = 0.4
 
-def partition_steps(path,nominal_step = 1000, dev_factor=0):	
+def partition_steps(path,nominal_step = 1, dev_factor=0):	
 	
 	#finds places where there is a change in extruder temperature
 	f = (path['extruding'].diff(periods = -1) != 0) | (path['extruding'].diff(periods = 1) != 0)

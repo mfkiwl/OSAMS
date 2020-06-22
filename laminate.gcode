@@ -1,0 +1,20 @@
+;TEST
+;*****INITIALIZE MACHINE******
+M104 T200
+M106 F100 
+M140 T60
+;**********LAYER 0************
+G1 X0 Y0 Z0 F20 
+G1 X1 Y0 Z0
+G1 X6 Y0 Z0
+G3 X6 Y2 I0 J1
+G2 X6 Y4 I0 J1
+;**********JUMP*****
+G0 X0 Y0 Z0.4
+;**********LAYER 1************
+G1 X0 Y0 
+G1 X1 Y0 
+G1 X6 Y0 
+G3 X6 Y2 I0 J1
+G2 X6 Y4 I0 J1
+G1 X1

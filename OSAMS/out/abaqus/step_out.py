@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
-
-from recalc_surf import *
+from .surface_changes import *
 
 def out_step(elements,step_no,steps,BC_changes,deposition = True):
 	 
@@ -90,7 +89,7 @@ BUILD_PLATE, 3, 3
 
 	s_out = s_out + f"""
 *SFILM
-BUILD_SURFACE, F, {60}, 210
+BUILD_SURFACE, F, {temp}, 210
 *RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
