@@ -5,3 +5,5 @@ __pycache__/*
 analysis.inp
 SUBROUTINES/dflux.for
 pout.csv
+pout.csv
+*.csv
