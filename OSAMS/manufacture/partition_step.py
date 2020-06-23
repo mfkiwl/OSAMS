@@ -11,12 +11,15 @@ def angle_between(v1, v2):
 """
 paritions_steps:
 args:
-	d0: toolpath distance at the beginning of the step 
-	d1: toolpath distance at the end of the step 
-	f: machine state function:
+	d0:	time at the start of the step
+	d1: time at the end of the step
+	f: machine state function
 	nom_el_size: nominal element size (mm)
 	jump: does a new path need to be created ?
 	step: the step being partitioned
+	nodes: dataframe of the current nodes
+	elements: dataframe of the current elements
+	template: dictionary of the template nodes and elements
 """
 def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,nom_el_size = 8):		#def:
 	num = math.ceil((d1-d0)/nom_el_size)
