@@ -4,7 +4,7 @@ import numpy as np
 this file is responsible for fetching and preprocessing the template mesh
 """
 
-centerline = np.array([0,0,0])		#centerline: the xy coordinate of the centerline of the mesh (NORMALLY ZERO) also dictates the rotation of the mesh
+centerline = np.array([0.00015,0,0])		#centerline: the xy coordinate of the centerline of the mesh (NORMALLY ZERO) also dictates the rotation of the mesh
 """
 consolidates the x y z coloumns into a vector to make things easier
 creates a vector from the template nodes to the centerline of the filament
@@ -18,7 +18,7 @@ def vects(nodes,center):
 	for i,node in nodes.iterrows():
 		X = np.array([node['x'],node['y'],node['z']])
 		nodes.at[i,'X'] = X
-		nodes.at[i,'V'] = X-center 
+		nodes.at[i,'V'] = X-centerline
 	nodes.drop(['x','y','z'],axis = 1)
 	return nodes
 

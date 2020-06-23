@@ -7,17 +7,26 @@ import OSAMS
 from OSAMS.out.abaqus import *
 with open('laminate.gcode', 'r') as myfile:
   gcode = myfile.read()
-
-path_states = OSAMS.interpriter.read_path(gcode)
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+path_states = OSAMS.interpreter.read_path(gcode)
 
 
 #partitions the toolpath into steps
-step_partitions = OSAMS.partititon.partition_steps(path_states,nominal_step = 10)
+step_partitions = OSAMS.partititon.partition_steps(path_states,nominal_step = 0.33)
 print(step_partitions)
 
 path_functs = OSAMS.partititon.df_functs(path_states,'time')
-
+ax.set_xlabel('x (mm)')
+ax.set_xlim(0,7)
+ax.set_ylim(0,7)
+ax.set_zlim(0,7)
+ax.set_ylabel('y (mm)')
+ax.set_zlabel('z (mm)')
+ax.scatter(	path_functs['x'](step_partitions),
+			path_functs['y'](step_partitions),
+			path_functs['z'](step_partitions))
 #partitions the extrusion steps
+plt.show()
 
 plt.plot(path_states['time'],path_states['temp'])
 plt.show()
@@ -63,7 +72,7 @@ for i in extrusion_steps:
 BC_changes = (BC_changes.drop_duplicates(['step','d_step', 'side', 'change']))
 BC_changes = BC_changes[BC_changes['side'] != 'NO']
 
-inp_file = open('analysis.inp','w+')
+inp_file = open('laminate.inp','w+')
 gen_inp = lambda x: inp_file.write(x)
 
 #flags the build plate nodes

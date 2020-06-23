@@ -1,5 +1,5 @@
 from .analyze import *
-from .interpriter import *
+from .interpreter import *
 from .manufacture import *
 from .material import *
 from .mesh import * 

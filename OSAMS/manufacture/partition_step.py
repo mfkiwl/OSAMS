@@ -15,11 +15,15 @@ args:
 	d1: time at the end of the step
 	f: machine state function
 	nom_el_size: nominal element size (mm)
-	jump: does a new path need to be created ?
+	jump: does a new path need to be created? 
 	step: the step being partitioned
 	nodes: dataframe of the current nodes
 	elements: dataframe of the current elements
 	template: dictionary of the template nodes and elements
+returns:
+	face_dir:	angle of the face at the end of this step
+	nodes:		dataframe of nodes
+	elements:	dataframe of elements
 """
 def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,nom_el_size = 8):		#def:
 	num = math.ceil((d1-d0)/nom_el_size)
@@ -31,7 +35,7 @@ def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,nom_el_siz
 					f['y'](d0),
 					f['z'](d0)])/1000
 	
-	#if the extruder jumps then create a new pat
+	#if the extruder jumps then create a new path
 	if (jump):
 		d_next = s_part[-1]
 
@@ -49,6 +53,7 @@ def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,nom_el_siz
 		face_dir = direction
 		d0 = d_next
 		del s_part[-1]
+
 	#extrudes the rest of the step
 	for i in s_part[::-1]:
 		d12 = (d0+i)/2

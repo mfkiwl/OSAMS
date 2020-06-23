@@ -20,7 +20,6 @@ def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0000001):
 	step_nodes = nodes.loc[nodes['step'] == step]
 	step_nodes = step_nodes.loc[step_nodes['type'] == 'SURFACE']
 	lower_nodes = nodes.loc[nodes['step'] < step] 
-	lower_nodes = lower_nodes.loc[lower_nodes['master'] != 'NO']
 	#print(step_nodes.index)
 
 	#goes through the nodes that have yet to be merged

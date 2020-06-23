@@ -46,6 +46,8 @@ def read_path(g_code):
 	total_distance = 0.0
 	enclosure = 20.0
 	layer = 0.0
+	
+	offset = [0,0,0] 
 
 
 	#HOW TO USE THIS INTERPRITER
@@ -61,6 +63,18 @@ def read_path(g_code):
 		#LINEAR MOVE
 		if (words[0][0] == ";"):
 			pass
+		if (words[0] == "G7"):
+			for j in words[1:]:
+				#READS DESTINATION LOCATION
+				prefix = j[0]
+				if (prefix == "X"):
+					offset[0] = float(j[1:])
+				if (prefix == "Y"):
+					offset[1] = float(j[1:])
+				if (prefix == "Z"):
+					offset[2] = float(j[1:])
+
+			
 		elif (words[0] == "G1" or words[0] == "G0"):
 			extruding.append(int(words[0][1]))
 			P1 = position.copy()
@@ -78,6 +92,8 @@ def read_path(g_code):
 				if (prefix == "F"):
 					feed_speed = float(j[1:])/60
 
+
+			position += offset
 			D = np.linalg.norm(position-P1)
 
 			#UPDATES THE TIME
@@ -237,6 +253,12 @@ def read_path(g_code):
 	x = pd.DataFrame(path,columns = ['x','y','z'])
 
 	path_states = path_states.join(x)
+	"""
+	fig = plt.figure()
+	ax = plt.axes(projection='3d')
+	ax.plot3D(x['x'],x['y'],x['z'])
+	plt.show()
+	"""
 	return path_states
 		
 			
@@ -260,9 +282,5 @@ def read_path(g_code):
 ##plt.plot(dy)
 ##plt.show()
 #
-#fig = plt.figure()
-#ax = plt.axes(projection='3d')
-#ax.plot3D(R1[0,:],R1[1,:],R1[2,:])
-#plt.show()
 			
 			
