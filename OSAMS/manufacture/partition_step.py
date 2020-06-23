@@ -25,7 +25,7 @@ returns:
 	nodes:		dataframe of nodes
 	elements:	dataframe of elements
 """
-def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,nom_el_size = 8):		#def:
+def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,nom_el_size = 1.2):		#def:
 	num = math.ceil((d1-d0)/nom_el_size)
 
 	#partitions from END of the step

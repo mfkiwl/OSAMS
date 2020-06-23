@@ -7,3 +7,5 @@ SUBROUTINES/dflux.for
 pout.csv
 pout.csv
 *.csv
+laminate.inp
+laminate.inp
