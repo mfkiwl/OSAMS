@@ -1,5 +1,4 @@
 from .surface_changes import *
-
 def out_step(elements,step_no,steps,BC_changes,model):
 	 
 	c_step = steps.iloc[step_no]
@@ -9,7 +8,7 @@ def out_step(elements,step_no,steps,BC_changes,model):
 	s_out = f"""
 *STEP,NAME = STEP_{step_no}, INC= 20000, NLGEOM = YES
 *COUPLED TEMPERATURE-DISPLACEMENT,DELTMX = 10., CETOL= 1e-3
-0, {dt}, 1e-9,{dt}
+{min([0.01,dt])}, {dt}, 1e-9, {dt}
 **SOLUTION TECHNIQUE, TYPE = {steps.at[step_no,'SOL_T']}
 *BOUNDARY, TYPE = DISPLACEMENT
 BUILD_PLATE, 1, 1 
@@ -31,8 +30,8 @@ BUILD_PLATE, 3, 3
 		j = surf_cond(d_step,side,row['change'],model)
 		s_out = s_out + j
 
-	s_out = s_out + """*RESTART, WRITE, FREQUENCY = 0
-*OUTPUT, FIELD, VARIABLE = PRESELECT
+	s_out = s_out + """*RESTART, WRITE, FREQUENCY = 0 
+*OUTPUT, FIELD, VARIABLE = PRESELECT, NUMBER INTERVAL = 1
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
 *NODE OUTPUT, NSET = N2
 U

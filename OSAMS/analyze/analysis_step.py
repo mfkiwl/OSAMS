@@ -3,12 +3,14 @@ import numpy as np
 from .merge_nodes import *
 """
 generates everything short of the INP lines
+DEPRECATED: replaced with merge p nodes
 args:
-	nodes:	the nodes of the 
+	nodes:	the nodes of the
 """
 def analysis_step(nodes,elements,surfaces,BC_changes,step):
 
 	#merges the nodes and recalculates the surfaces
+	#(nodes,elements,surfaces,BC_changes) = faast(nodes,elements,surfaces,BC_changes)
 	(nodes,elements,surfaces,BC_changes) = merge_nodes(nodes,elements,step,surfaces,BC_changes)
 
 	return (nodes,elements,surfaces,BC_changes)

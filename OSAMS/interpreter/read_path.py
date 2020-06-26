@@ -47,7 +47,7 @@ def read_path(g_code):
 	enclosure = 20.0
 	layer = 0.0
 	
-	offset = [0,0,0] 
+	offset = np.array([0.0,0.0,0.0])
 
 
 	#HOW TO USE THIS INTERPRITER
@@ -63,7 +63,7 @@ def read_path(g_code):
 		#LINEAR MOVE
 		if (words[0][0] == ";"):
 			pass
-		if (words[0] == "G7"):
+		elif (words[0] == "G7"):
 			for j in words[1:]:
 				#READS DESTINATION LOCATION
 				prefix = j[0]
@@ -74,7 +74,6 @@ def read_path(g_code):
 				if (prefix == "Z"):
 					offset[2] = float(j[1:])
 
-			
 		elif (words[0] == "G1" or words[0] == "G0"):
 			extruding.append(int(words[0][1]))
 			P1 = position.copy()
@@ -92,8 +91,8 @@ def read_path(g_code):
 				if (prefix == "F"):
 					feed_speed = float(j[1:])/60
 
-
-			position += offset
+			
+			position = position + offset 
 			D = np.linalg.norm(position-P1)
 
 			#UPDATES THE TIME
@@ -225,6 +224,7 @@ def read_path(g_code):
 
 
 			#UPDATES MACHINE STATE
+			extruding.append(0)
 			bed_temperatures.append(bed_temperature)
 			enclosures.append(enclosure)
 			temperatures.append(temperature)
@@ -244,21 +244,13 @@ def read_path(g_code):
 			distances.append(total_distance)
 			
 	
-	pa = np.transpose(np.array([distances,times,temperatures,fan_speeds,bed_temperatures,extruding]))
-	
-
+	pa = np.transpose(np.array([distances,times,temperatures,fan_speeds,bed_temperatures,extruding]))	
 	path_states = pd.DataFrame(pa, columns = ['distance','time', 'temp','fan','b_temp','extruding'])
 	path = path.reshape((-1,3))
 	
 	x = pd.DataFrame(path,columns = ['x','y','z'])
 
 	path_states = path_states.join(x)
-	"""
-	fig = plt.figure()
-	ax = plt.axes(projection='3d')
-	ax.plot3D(x['x'],x['y'],x['z'])
-	plt.show()
-	"""
 	return path_states
 		
 			

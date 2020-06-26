@@ -43,18 +43,18 @@ returns:
 """
 
 def extrude(nodes,elements,template_nodes,template_elements,step,d0,dr,x0,x12,x1):
-	print(x0)
 	num_n = nodes.shape[0]
 	num_ni = template_nodes.shape[0]
 	num_e = elements.shape[0]
 	
 	#copies the face nodes 
-	face_nodes = template_nodes[['type','ref','X','step','master']].copy()
+	face_nodes = template_nodes[['type','ref','X','step','up','down','left','right']].copy()
+	#print(face_nodes)
 
 	#nodes for the edges 17-20
 	edge_template = template_nodes.loc[template_nodes['corner'] == 'YES']
 
-	edge_nodes = edge_template[['type','ref','X','step','master']].copy()
+	edge_nodes = edge_template[['type','ref','X','step','up','down','left','right']].copy()
 
 	#number of edge nodes
 	num_en = edge_nodes.shape[0]
@@ -69,7 +69,6 @@ def extrude(nodes,elements,template_nodes,template_elements,step,d0,dr,x0,x12,x1
 	#location along the extrude path of the mid edge nodes
 	#translates the nodes
 	face_nodes['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
-	print(face_nodes['X'])
 	#print(template_nodes[['x','y','z']].dot(np.transpose(R)))
 	#print(face_nodes['X'])
 

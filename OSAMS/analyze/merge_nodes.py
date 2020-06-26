@@ -7,6 +7,7 @@ def replace(x,rp,rw):
 	return x
 """
 merge_nodes
+DEPRECATED
 merges nodes with the same coordinates and handles changing of BCs
 args:
 	nodes:		dataframe of the nodes
@@ -48,7 +49,6 @@ def merge_nodes(nodes,elements,step,surfaces,BC_changes,tol = 0.0000001):
 				#flags surface as redundant
 				
 				surfaces.loc[step, node['master']] = 1 
-				print(node['master'])
 
 				#appends change to BC changes
 				BC_changes.loc[len(BC_changes)] = BC_change

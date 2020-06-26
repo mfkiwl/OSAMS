@@ -20,13 +20,13 @@ def start_path(nodes,elements,template_nodes,template_elements,step,dr,x0,x1):
 	num_e = elements.shape[0]
 	
 	#copies the face nodes 
-	face_nodes0 = template_nodes[['type','ref','X','step','master']].copy()
-	face_nodes1 = template_nodes[['type','ref','X','step','master']].copy()
+	face_nodes0 = template_nodes[['type','ref','X','step','up','down','left','right']].copy()
+	face_nodes1 = template_nodes[['type','ref','X','step','up','down','left','right']].copy()
 
 	#nodes for the edges 17-20
 	edge_template = template_nodes.loc[template_nodes['corner'] == 'YES']
 
-	edge_nodes = edge_template[['type','ref','X','step','master']].copy()
+	edge_nodes = edge_template[['type','ref','X','step','up','down','left','right']].copy()
 
 	#number of edge nodes
 	num_en = edge_nodes.shape[0]

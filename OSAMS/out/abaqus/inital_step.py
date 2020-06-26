@@ -13,7 +13,7 @@ ALLNODES, 200.
 ALLELEMENTS,
 *STEP,NAME = STEP_0, INC= 20000, NLGEOM = YES
 *COUPLED TEMPERATURE-DISPLACEMENT, DELTMX = 10., CETOL= 1e-3
-0, {dt}, 1e-9,{dt}
+{min([0.01,dt])}, {dt}, 1e-9, {dt}
 **SOLUTION TECHNIQUE, TYPE = {steps.at[0,'SOL_T']}
 *BOUNDARY, TYPE = DISPLACEMENT
 BUILD_PLATE, 1, 1 
@@ -33,7 +33,6 @@ BUILD_PLATE, 3, 3
 	es = "*SFILM"
 	#print(surfaces)
 	for i,row in surfaces.iterrows():
-		print(row)
 		if (row['ref'] == -1):
 			es = es + f"\n{i[1]}_{i[0]}, F, {model['enclosure']}, {model['h_nat']}"
 	
@@ -42,7 +41,7 @@ BUILD_PLATE, 3, 3
 
 	s_out = s_out + f"""
 *SFILM
-BUILD_SURFACE, F, {temp}, {model['plate']}
+BUILD_SURFACE, F, {c_step['BP_T']}, {model['plate']}
 *RESTART, WRITE, FREQUENCY = 0
 *OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
