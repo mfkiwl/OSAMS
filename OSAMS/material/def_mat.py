@@ -1,6 +1,7 @@
 
 def materiel_model():
 	return ("""
+*PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMAN=5.6703E-8
 *Material, name=ABSP400
 *Conductivity
  0.3,

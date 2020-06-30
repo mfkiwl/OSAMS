@@ -20,10 +20,15 @@ wid_fil = 100
 l = fw * len_fil
 w = fw * wid_fil
 
-area_size = 3
+area_size = 4
 a_d = area_size * fw
 
-layers = 2
+layers = 2 
+
+#APPLY SERVICE LOAD?
+service = True
+
+
 g_code = """;TEST
 ;*****INITIALIZE MACHINE******
 M104 T200
@@ -44,11 +49,11 @@ for i in range(0,layers):
 		l0 = f"G4 S{t90[1]}\n"
 		of = "G7 X0.15 Y-0.15\n"
 	l1 = f"G0 X0 Y0 F{feed}\n"
-	g_code += (l0)
+	#g_code += (l0)
 	g_code += of
 	g_code += (l1)
 	for j in range(0,area_size):
-		x = pos*fw*area_size
+		x = pos*fw*area_size*2
 		y = j * fw
 		wait = t0[1]
 		if (deg90):
@@ -73,9 +78,9 @@ for i in range(0,layers):
 	if (deg90):
 		l0 = f"G4 S{t90[1]}\n"
 	
-	g_code += (l0)
+	#g_code += (l0)
 	g_code += f"G0 X0 Y0 Z{(i+1)*fh}\n"
-	deg90 ^= True
+	#deg90 ^= True
 
 path_states = OSAMS.interpreter.read_path(g_code)
 #input("WAIT")
@@ -140,7 +145,7 @@ layer1_steps = steps.loc[mask].index
 for i in layer1_steps:
 	surfaces.loc[i,'DOWN'] = 1
 
-inp_file = open('newlam.inp','w+')
+inp_file = open('../long_uni.inp','w+')
 gen_inp = lambda x: inp_file.write(x)
 
 #flags the build plate nodes
@@ -159,5 +164,10 @@ num_step = steps.shape[0]
 gen_inp(inital_step(elements,num_step,steps,surfaces,model))
 for i in range(1,num_step):
 	gen_inp(out_step(elements,i,steps,BC_changes,model))
+
+#applies the service load as described in service .inp
+if (service):
+	service_step = open('service.inp').read()
+	gen_inp(service_step)
 end = time.time()
 print(end-start)

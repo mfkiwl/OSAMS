@@ -20,6 +20,7 @@ def vects(nodes,center):
 		nodes.at[i,'X'] = X
 		nodes.at[i,'V'] = X-centerline
 	nodes.drop(['x','y','z'],axis = 1)
+	d = {'TRUE':True,'FALSE':False}
 	return nodes
 
 nodes = pd.read_excel("9BRICK.xlsx",sheet_name = 'NODES', index_col = 'index')

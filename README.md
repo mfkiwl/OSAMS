@@ -37,5 +37,4 @@ def my_funct(a,b)
 - add user defined machine behaviour
 - improve handling of mesh templates
 - PyPi
-- improve node merging algorithim
 - add support for sequentially coupled analysis
