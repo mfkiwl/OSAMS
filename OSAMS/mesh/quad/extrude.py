@@ -48,13 +48,13 @@ def extrude(nodes,elements,template_nodes,template_elements,step,d0,dr,x0,x12,x1
 	num_e = elements.shape[0]
 	
 	#copies the face nodes 
-	face_nodes = template_nodes[['type','ref','X','step','up','down','left','right']].copy()
+	face_nodes = template_nodes[['type','ref','x','y','z','step','up','down','left','right']].copy()
 	#print(face_nodes)
 
 	#nodes for the edges 17-20
 	edge_template = template_nodes.loc[template_nodes['corner'] == 'YES']
 
-	edge_nodes = edge_template[['type','ref','X','step','up','down','left','right']].copy()
+	edge_nodes = edge_template[['type','ref','x','y','z','step','up','down','left','right']].copy()
 
 	#number of edge nodes
 	num_en = edge_nodes.shape[0]
@@ -68,12 +68,14 @@ def extrude(nodes,elements,template_nodes,template_elements,step,d0,dr,x0,x12,x1
 
 	#location along the extrude path of the mid edge nodes
 	#translates the nodes
-	face_nodes['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
-	#print(template_nodes[['x','y','z']].dot(np.transpose(R)))
+	#face_nodes['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
+	face_nodes[['x','y','z']] = template_nodes[['i','j','k']].dot(np.transpose(R)) + x1
 	#print(face_nodes['X'])
 
 	#translates the edge nodes
-	edge_nodes['X'] = edge_template['V'].apply(lambda x: x12 + np.matmul(R2,np.transpose(x)))
+	#edge_nodes['X'] = edge_template['V'].apply(lambda x: x12 + np.matmul(R2,np.transpose(x)))
+	edge_nodes[['x','y','z']] = edge_template[['i','j','k']].dot(np.transpose(R2)) + x12
+
 
 	current_elements = template_elements.copy()
 	# M  = 8 for 20 node

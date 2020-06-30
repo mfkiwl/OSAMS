@@ -83,7 +83,6 @@ for i in range(0,layers):
 	#deg90 ^= True
 
 path_states = OSAMS.interpreter.read_path(g_code)
-#input("WAIT")
 pot.plot3D(path_states['x'],path_states['y'],path_states['z'],linestyle = 'dashed')
 
 #partitions the toolpath into steps
@@ -93,7 +92,8 @@ path_functs = OSAMS.partititon.df_functs(path_states,'time')
 
 start = time.time()
 #gets the template (9Brick)
-cn = template.nodes[['type','ref','X','step','up','down','left','right']]
+cn = template.nodes[['type','ref','x','y','z','step','up','down','left','right']]
+input("WAIT")
 brick = {}
 brick['nodes'] = template.nodes
 brick['elements'] = template.elements
@@ -111,6 +111,7 @@ model['h_fan'] = 67
 
 #extrudes the mesh and the template
 steps,nodes,elements,p_nodes = OSAMS.manufacture.create_steps(step_partitions,path_functs,nodes,elements,brick)
+input('wait')
 extrusion_steps = steps.loc[steps['type'] == 1]
 extrusion_steps = extrusion_steps.index 
 #LIST OF BOUNDARY CONDITION CHANGES
@@ -145,7 +146,7 @@ layer1_steps = steps.loc[mask].index
 for i in layer1_steps:
 	surfaces.loc[i,'DOWN'] = 1
 
-inp_file = open('../long_uni.inp','w+')
+inp_file = open('../teal.inp','w+')
 gen_inp = lambda x: inp_file.write(x)
 
 #flags the build plate nodes

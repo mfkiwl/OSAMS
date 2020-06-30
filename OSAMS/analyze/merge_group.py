@@ -26,9 +26,22 @@ def merge_groups(nodes,s0,s1,d0,d1,elements, tol = 0.000001):
 	for i,node in lower.iterrows():
 
 		#finds close nodes
-		w = node['X']
-		close = lambda x: np.linalg.norm(x-w) < tol 
-		canidates = upper.loc[upper['X'].apply(close)]
+		x = node['x']
+		y = node['y']
+		z = node['z']
+
+		canidates = upper[np.isclose(upper['x'].values[:,None],x,atol = tol).any(axis = 1)]
+		if canidates.shape[0] == 0:
+			continue
+	
+		canidates = canidates[np.isclose(canidates['y'].values[:,None],y,atol = tol).any(axis = 1)]
+		if canidates.shape[0] == 0:
+			continue
+
+		canidates = canidates[np.isclose(canidates['z'].values[:,None],z,atol = tol).any(axis = 1)]
+		if canidates.shape[0] == 0:
+			continue
+
 		if (canidates.shape[0] > 0):
 			merged = canidates.index[0]
 			#ex = canidates.at[merged,'X']

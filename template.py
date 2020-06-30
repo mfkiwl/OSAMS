@@ -13,13 +13,18 @@ args:
 	center:		
 """
 def vects(nodes,center): 
-	nodes['X'] = ""
-	nodes['V'] = ""
+	#nodes['X'] = ""
+	#nodes['V'] = ""
+	nodes[['i','j','k']] = nodes[['x','y','z']] - centerline
+
+	"""
 	for i,node in nodes.iterrows():
 		X = np.array([node['x'],node['y'],node['z']])
-		nodes.at[i,'X'] = X
-		nodes.at[i,'V'] = X-centerline
+		nodes.at[i,['i','j','z']] = X-centerline
+	"""
+
 	nodes.drop(['x','y','z'],axis = 1)
+	print(nodes)
 	d = {'TRUE':True,'FALSE':False}
 	return nodes
 

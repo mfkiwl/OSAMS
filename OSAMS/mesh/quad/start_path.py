@@ -20,13 +20,13 @@ def start_path(nodes,elements,template_nodes,template_elements,step,dr,x0,x1):
 	num_e = elements.shape[0]
 	
 	#copies the face nodes 
-	face_nodes0 = template_nodes[['type','ref','X','step','up','down','left','right']].copy()
-	face_nodes1 = template_nodes[['type','ref','X','step','up','down','left','right']].copy()
+	face_nodes0 = template_nodes[['type','ref','x','y','z','step','up','down','left','right']].copy()
+	face_nodes1 = template_nodes[['type','ref','x','y','z','step','up','down','left','right']].copy()
 
 	#nodes for the edges 17-20
 	edge_template = template_nodes.loc[template_nodes['corner'] == 'YES']
 
-	edge_nodes = edge_template[['type','ref','X','step','up','down','left','right']].copy()
+	edge_nodes = edge_template[['type','ref','x','y','z','step','up','down','left','right']].copy()
 
 	#number of edge nodes
 	num_en = edge_nodes.shape[0]
@@ -40,11 +40,11 @@ def start_path(nodes,elements,template_nodes,template_elements,step,dr,x0,x1):
 	x12 = (x0 + x1)/2
 
 	#translates the nodes
-	face_nodes0['X'] = template_nodes['V'].apply(lambda x: x0 + np.matmul(R,np.transpose(x)))
-	face_nodes1['X'] = template_nodes['V'].apply(lambda x: x1 + np.matmul(R,np.transpose(x)))
+	face_nodes0[['x','y','z']] = template_nodes[['i','j','k']].dot(np.transpose(R)) + x0
+	face_nodes1[['x','y','z']] = template_nodes[['i','j','k']].dot(np.transpose(R)) + x1
 
 	#translates the edge nodes
-	edge_nodes['X'] = edge_template['V'].apply(lambda x: x12 + np.matmul(R,np.transpose(x)))
+	edge_nodes[['x','y','z']] = edge_template[['i','j','k']].dot(np.transpose(R)) + x12
 
 	current_elements = template_elements.copy()
 	# M  = 8 for 20 node

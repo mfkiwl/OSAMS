@@ -11,5 +11,5 @@ def out_nodes(nodes,step = 100000):
 	nodes = nodes.loc[nodes['step'] < step]
 	for i,node in nodes.iterrows():
 		if (node['ref'] == -1):
-			el_def = el_def + (f"{i+1}\t,{node['X'][0]}\t,{node['X'][1]}\t,{node['X'][2]} \n")
+			el_def = el_def + (f"{i+1}\t,{node['x']}\t,{node['y']}\t,{node['z']} \n")
 	return el_def
