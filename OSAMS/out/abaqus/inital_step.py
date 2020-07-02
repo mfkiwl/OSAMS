@@ -35,6 +35,12 @@ BUILD_PLATE, 3, 3
 	for i,row in surfaces.iterrows():
 		if (row['ref'] == -1):
 			es = es + f"\n{i[1]}_{i[0]}, F, {model['enclosure']}, {model['h_nat']}"
+	if (steps.at[0,'type'] == 1):
+		es = es + f"""
+*DFLUX
+E_STEP_0,BF, {(2020*1040)*(200-20)/dt}
+"""
+		
 	
 	#COMMITS setting all freee surface
 	s_out = s_out + es

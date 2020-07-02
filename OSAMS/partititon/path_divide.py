@@ -43,7 +43,6 @@ def partition_steps(path,nominal_step = 1, dev_factor=0):
 	t = t.sort_values()
 	return(t)
 
-
 """
 df_funct
 creates a dictinary of lamda functions that linearly interpolates with respect to x_col

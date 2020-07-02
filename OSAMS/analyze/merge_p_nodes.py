@@ -51,6 +51,7 @@ def merge_p_nodes(p_nodes,nodes,elements,surfaces,BC_changes,tol = 0.00001):
 		s0 = int(stp)
 		d1 = canidates['direction'].values[0]
 		d0 = c_node['direction']
+		#print(f"MERGED {s0}{d0} WITH {s1}{d1}")
 		nodes,elements = merge_groups(nodes,s0,s1,d0,d1,elements)
 		dropper = p_nodes.loc[(p_nodes['step'] == s1)&(p_nodes['direction'] == d1)].index
 		ls = ls.drop(dropper)

@@ -7,7 +7,7 @@ args:
 """
 def node_sets(nodes,name,step = 10000):	
 	s_def = f"\n*NSET, NSET = {name}\n"
-	cn = nodes.loc[nodes['type'] == name]
+	cn = nodes
 	#s_def = s_def + f"\n{nodes.index[0]+1}"
 	for i,node in cn.iterrows():
 		s_def = s_def + f"{i+1},\n"

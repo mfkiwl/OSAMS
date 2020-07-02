@@ -18,8 +18,6 @@ BUILD_PLATE, 3, 3
 	if (steps.iloc[step_no]['type']):
 		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}\n"
 		s_out = s_out + es
-#	for i in range(1,step_no):
-#		es = es + f",\nE_STEP_{i}"
 
 	#list of boundry condition changes for this step
 	changes = BC_changes.loc[BC_changes['step'] == step_no]

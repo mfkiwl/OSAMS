@@ -25,9 +25,9 @@ def vects(nodes,center):
 
 	nodes.drop(['x','y','z'],axis = 1)
 	print(nodes)
-	d = {'TRUE':True,'FALSE':False}
 	return nodes
 
 nodes = pd.read_excel("9BRICK.xlsx",sheet_name = 'NODES', index_col = 'index')
+print(nodes.head())
 elements = pd.read_excel("9BRICK.xlsx",sheet_name = 'ELEMENTS', index_col = 'index')
 nodes = vects(nodes,centerline)

@@ -1,7 +1,4 @@
-
-def materiel_model():
-	return ("""
-*PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMAN=5.6703E-8
+"""
 *Material, name=ABSP400
 *Conductivity
  0.3,
@@ -19,8 +16,25 @@ def materiel_model():
 ** 0.24,  0.,  7.
 **0.21,  1.,100.
 **Trs
-**108.,  8.86, 101.6""")
+"""
+def materiel_model():
+	return ("""
+*PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMAN=5.6703E-8
+*Material, name=ABSP430
+*Conductivity
+0.3,
+*Density
+1040.,
+*Elastic, moduli=LONG TERM
+2200e6., 0.4
+*PLASTIC, HARDENING=ISOTROPIC
+31e6, 0.0
+33e6, 0.05
+*Expansion
+8.82e-05,
+*Specific Heat
+2020
+""")
 
 def section():
-	return """
-*SOLID SECTION, ELSET=ALLELEMENTS, MATERIAL = ABSP400"""
+	return """*SOLID SECTION, ELSET=ALLELEMENTS, MATERIAL = ABSP430"""

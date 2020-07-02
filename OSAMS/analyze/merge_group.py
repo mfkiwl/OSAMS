@@ -44,13 +44,18 @@ def merge_groups(nodes,s0,s1,d0,d1,elements, tol = 0.000001):
 
 		if (canidates.shape[0] > 0):
 			merged = canidates.index[0]
+			ind = node['ref']
 			#ex = canidates.at[merged,'X']
 			step = canidates['step'].iloc[0]
 			upper.drop(merged,inplace = True)
-			nodes.drop(merged,inplace = True)
 			#nodes.at[i,'X'] = (w+ex)/2
+
+			#if (ind != i):
+				#print(f"merged {merged} to {ind} via {i}")
+
+			nodes.at[merged,'ref'] = ind
 			#step_els = elements.loc[elements['step'] == step]
 
-			elements[e_list] = elements[e_list].replace(merged,i)
+			elements[e_list] = elements[e_list].replace(merged,ind)
 	return nodes,elements
 			
