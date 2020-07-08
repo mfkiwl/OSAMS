@@ -5,8 +5,9 @@ args:
 	elements:	dataframe of elements 
 	nodes:		dataframe of nodes
 """
-def out_elements(elements,nodes,step = 100000):
-	el_def = "*ELEMENT,ELSET = ALLELEMENTS, TYPE = C3D20T"
+def out_elements(elements,nodes,template,analysis_type = 'C',step = 100000):
+	
+	el_def = f"*ELEMENT,ELSET = ALLELEMENTS, TYPE = {template.e_type['abaqus'].at[analysis_type]}"
 	elements = elements.loc[elements['step'] < step]
 	for i,element in elements.iterrows():
 		e_nodes = element.loc[e_list]+ 1

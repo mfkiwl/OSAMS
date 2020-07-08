@@ -17,7 +17,6 @@ BC CATS:
 def surf_cond(step,side,cond,model):
 	s_def = f"*SFILM\n{side}_{step}, F,"
 	r_def = f"*SRADIATE\n{side}_{step}, R,"
-	print(side)
 
 	if (cond == "free_surface"):
 		#sink temperature and convection cooefficent and emissivity of the 

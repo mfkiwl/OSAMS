@@ -16,7 +16,7 @@ returns:
 	removes redundant surfaces
 """
 
-def merge_p_nodes(p_nodes,nodes,elements,surfaces,BC_changes,tol = 0.00001):
+def merge_p_nodes(p_nodes,nodes,elements,surfaces,BC_changes,tol = 0.00005):
 	p_nodes.sort_values(by ='step', inplace = True)
 	to_merge = p_nodes.copy()
 	ls = p_nodes.index

@@ -50,7 +50,8 @@ returns:
 	nodes:		dataframe of nodes
 	elements:	dataframe of elements
 """
-def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,pseudo_nodes,nom_el_size =0.101):		#def:
+def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,pseudo_nodes,nom_el_size =100):		#def:
+
 	num = math.ceil((d1-d0)/nom_el_size)
 
 	#partitions from END of the step
@@ -126,7 +127,7 @@ def partition_step(d1,d0,f,jump,step,nodes,elements,template,face_dir,pseudo_nod
 	p_nodes = pd.DataFrame.from_records(psuedo,columns = ['direction'])
 	p_nodes['step'] = ste
 	p_nodes['x'] = [0,0,-template['width']/2,template['width']/2]
-	p_nodes['z'] = [template['width']/2,-template['width']/2,0,0]
+	p_nodes['z'] = [template['height']/2,-template['height']/2,0,0]
 	p_nodes['y'] = [0,0,0,0]
 	p_nodes[['x','y','z']] = p_nodes[['x','y','z']].dot(R)
 	p_nodes['x'] += x12[0]

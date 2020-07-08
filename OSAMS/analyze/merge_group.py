@@ -15,7 +15,7 @@ args:
 returns:
 	merged nodes and elements
 """
-def merge_groups(nodes,s0,s1,d0,d1,elements, tol = 0.000001):
+def merge_groups(nodes,s0,s1,d0,d1,elements, tol = 0.00001):
 
 	#gets the nodes of the two surfaces to merge
 	lower = nodes.loc[(nodes['step'].isin([s0-1,s0,s0+1])) & (nodes[d0])].copy()
@@ -41,6 +41,7 @@ def merge_groups(nodes,s0,s1,d0,d1,elements, tol = 0.000001):
 		canidates = canidates[np.isclose(canidates['z'].values[:,None],z,atol = tol).any(axis = 1)]
 		if canidates.shape[0] == 0:
 			continue
+		print('help')
 
 		if (canidates.shape[0] > 0):
 			merged = canidates.index[0]
@@ -50,8 +51,6 @@ def merge_groups(nodes,s0,s1,d0,d1,elements, tol = 0.000001):
 			upper.drop(merged,inplace = True)
 			#nodes.at[i,'X'] = (w+ex)/2
 
-			#if (ind != i):
-				#print(f"merged {merged} to {ind} via {i}")
 
 			nodes.at[merged,'ref'] = ind
 			#step_els = elements.loc[elements['step'] == step]

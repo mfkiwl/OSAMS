@@ -1,6 +1,6 @@
 import pandas as pd 
 from .partition_step import *
-layer_z = 0.3
+layer_z = 0.254
 def angle_between(v1, v2):
 	theta = (np.arctan2(np.cross(v1,v2),np.dot(v1,v2))[2])%(2*np.pi)
 	return theta

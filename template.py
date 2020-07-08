@@ -4,7 +4,7 @@ import numpy as np
 this file is responsible for fetching and preprocessing the template mesh
 """
 
-centerline = np.array([0.00015,0,0])		#centerline: the xy coordinate of the centerline of the mesh (NORMALLY ZERO) also dictates the rotation of the mesh
+centerline = np.array([0.000914,0,0])/2		#centerline: the xy coordinate of the centerline of the mesh (NORMALLY ZERO) also dictates the rotation of the mesh
 """
 consolidates the x y z coloumns into a vector to make things easier
 creates a vector from the template nodes to the centerline of the filament
@@ -15,6 +15,8 @@ args:
 def vects(nodes,center): 
 	#nodes['X'] = ""
 	#nodes['V'] = ""
+	nodes[['z']] = nodes[['z']] * 0.000254
+	nodes[['x']] = nodes[['x']] * 0.000914
 	nodes[['i','j','k']] = nodes[['x','y','z']] - centerline
 
 	"""
@@ -27,7 +29,8 @@ def vects(nodes,center):
 	print(nodes)
 	return nodes
 
-nodes = pd.read_excel("9BRICK.xlsx",sheet_name = 'NODES', index_col = 'index')
+nodes = pd.read_excel("1BRICK.xlsx",sheet_name = 'NODES', index_col = 'index')
 print(nodes.head())
-elements = pd.read_excel("9BRICK.xlsx",sheet_name = 'ELEMENTS', index_col = 'index')
+elements = pd.read_excel("1BRICK.xlsx",sheet_name = 'ELEMENTS', index_col = 'index')
+e_type = pd.read_excel("1BRICK.xlsx", sheet_name = 'ETYPE', index_col = 'analysis')
 nodes = vects(nodes,centerline)

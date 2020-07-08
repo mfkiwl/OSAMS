@@ -11,20 +11,19 @@ import service
 from OSAMS.out.abaqus import *
 
 pot = plt.figure().gca(projection='3d')
-feed = 60
+feed = 600
 
-fw = 0.3
-fh = 0.3
+fw = 0.914
+fh = 0.254
 
 len_fil = 200
 wid_fil = 100
 l = fw * len_fil
 w = fw * wid_fil
 
-area_size = 20 
+area_size = 5
 a_d = area_size * fw
-
-layers = 3
+layers = 3 
 
 #APPLY SERVICE LOAD?
 serv = True
@@ -34,7 +33,7 @@ g_code = """;TEST
 ;*****INITIALIZE MACHINE******
 M104 T200
 M106 F100
-M140 T60
+M140 T75
 """
 t = (l-a_d)/feed
 t0 = [t, (t/2) + (l*(wid_fil-area_size))/(2 * feed)]
@@ -55,7 +54,7 @@ for i in range(0,layers):
 	g_code += of
 	g_code += (l1)
 	for j in range(0,area_size):
-		x = pos*fw*area_size
+		x = pos*fw*area_size 
 		y = j * fw
 		wait = t0[1]
 		if (deg90):
@@ -99,7 +98,7 @@ path_states = OSAMS.interpreter.read_path(g_code)
 pot.plot3D(path_states['x'],path_states['y'],path_states['z'],linestyle = 'dashed')
 
 #partitions the toolpath into steps
-step_partitions = OSAMS.partititon.partition_steps(path_states,nominal_step = 0.5)
+step_partitions = OSAMS.partititon.partition_steps(path_states,nominal_step = 0.0924)
 
 path_functs = OSAMS.partititon.df_functs(path_states,'time')
 
@@ -109,22 +108,25 @@ cn = template.nodes[['type','ref','x','y','z','step','up','down','left','right']
 brick = {}
 brick['nodes'] = template.nodes
 brick['elements'] = template.elements
-brick['width'] = 0.0003
+brick['width'] = 0.000914
+brick['height'] = 0.000254 
 nodes= cn[0:0].copy()
 elements = template.elements[0:0].copy()
 
 #global properties (placeholder)
 model = {}
-model['enclosure'] = 20 
+model['enclosure'] = 75 
 model['emissivity'] = 0.3
 model['plate'] = 210
 model['h_nat'] = 67
 model['h_fan'] = 67 
+model['A_TEMP'] = False
+model
 
 #extrudes the mesh and the template
 steps,nodes,elements,p_nodes = OSAMS.manufacture.create_steps(step_partitions,path_functs,nodes,elements,brick)
 nodes['ref'] = nodes.index
-#print(nodes.head())
+print(p_nodes['z'])
 extrusion_steps = steps.loc[steps['type'] == 1]
 extrusion_steps = extrusion_steps.index 
 #LIST OF BOUNDARY CONDITION CHANGES
@@ -143,14 +145,14 @@ nodes = nodes.loc[nodes['ref'] == nodes.index]
 for i in steps.index:
 	sn = p_nodes.loc[p_nodes['step'] == i].copy()
 	pot.scatter(sn['x']*1000,sn['y']*1000,sn['z']*1000,s = 20)
-pot.set_xlim(0,5)
-pot.set_zlim(-0.5,0.5)
-pot.set_ylim(0,2.5)
+#pot.set_xlim(0,5)
+#pot.set_zlim(-0.5,0.5)
+#pot.set_ylim(0,2.5)
 pot.set_xlabel('x(mm)')
 pot.set_ylabel('y(mm)')
 pot.set_zlabel('z(mm)')
 plt.show()
-"""#
+"""
 BC_changes = (BC_changes.drop_duplicates(['step','d_step', 'side', 'change']))
 BC_changes = BC_changes[BC_changes['side'] != 'NO']
 
@@ -160,14 +162,21 @@ layer1_steps = steps.loc[mask].index
 for i in layer1_steps:
 	surfaces.loc[i,'DOWN'] = 1
 
-inp_file = open(f'../TESTERS/ARMS{area_size}x{layers}x{cross}C.inp','w+')
+thermal_job = f'{area_size}x{layers}x{cross}VALID_therm' 
+structural_job = f'{area_size}x{layers}x{cross}VALID_disp' 
+thermal_file = open(f'../TESTERS/{thermal_job}.inp','w+')
+structural_file = open(f'../TESTERS/{structural_job}.inp','w+')
 
-gen_inp = lambda x: inp_file.write(x)
+
+thermal_inp = lambda x: thermal_file.write(x)
+structural_inp = lambda x: structural_file.write(x)
 
 #flags the build plate nodes
 nodes = OSAMS.analyze.build_nodes(nodes)
-gen_inp(out_nodes(nodes))
-gen_inp(out_elements(elements,nodes,template))
+thermal_inp(out_nodes(nodes))
+structural_inp(out_nodes(nodes))
+thermal_inp(out_elements(elements,nodes,template,analysis_type = 'T'))
+structural_inp(out_elements(elements,nodes,template,analysis_type = 'S'))
 #creates the build surface nodes
 bs_nodes = nodes.loc[nodes['z'] < 0.000001]
 #finds the left nodes
@@ -182,22 +191,34 @@ front_right = front_nodes['y'].idxmin()
 rear_nodes = bs_nodes.loc[(bs_nodes['x'] < min_x )]
 rear_left = rear_nodes['y'].idxmax()
 
-gen_inp(OSAMS.material.def_mat.materiel_model())
-gen_inp(OSAMS.material.def_mat.section())
-gen_inp(build_surf(elements,steps))
-gen_inp(element_sets(elements,steps))
-gen_inp(node_sets(bs_nodes,"BUILD_PLATE"))
-gen_inp(out_surf(elements,surfaces))
+structural_inp(OSAMS.material.def_mat.materiel_model())
+thermal_inp(OSAMS.material.def_mat.materiel_model())
+structural_inp(OSAMS.material.def_mat.section())
+thermal_inp(OSAMS.material.def_mat.section())
+thermal_inp(element_sets(elements,steps))
+thermal_inp(build_surf(elements,steps))
+structural_inp(element_sets(elements,steps))
+structural_inp(node_sets(bs_nodes,"BUILD_PLATE"))
+
+thermal_inp(out_surf(elements,surfaces))
 #print(nodes.shape[0])
 num_step = steps.shape[0]
 
-gen_inp(inital_step(elements,num_step,steps,surfaces,model))
+thermal_inp(inital_thermal(elements,num_step,steps,surfaces,model))
+structural_inp(inital_structural(elements,num_step,steps,surfaces,model,thermal_job,1))
+j = 1
+print("**************")
 for i in range(1,num_step):
-	gen_inp(out_step(elements,i,steps,BC_changes,model))
+	thermal_inp(thermal_step(elements,i,steps,BC_changes,model))
+	structural_inp(structural_step(elements,i,steps,thermal_job,j))
+	j = j + 1
+	print(j)
 
 #applies the service load as described in service .inp
 if (serv):
-	service_step = service.service(6,front_right,front_left,rear_left)
-	gen_inp(service_step)
-end = time.time()
-print(end-start)
+	thermal_inp(service.thermal_service())
+	struct_serv = service.struct_service(6,front_right,front_left,rear_left,j,thermal_job)
+	structural_inp(struct_serv)
+	
+#end = time.time()
+#print(end-start)

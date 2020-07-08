@@ -6,3 +6,7 @@ from .out_surf		import *
 from .build_surf	import *
 from .inital_step	import *
 from .out_step		import *
+from .inital_thermal import *
+from .inital_structural import *
+from .thermal_step import *
+from .structural_step import *
