@@ -29,12 +29,14 @@ def my_funct(a,b)
 	return(c,d)
 ```
 ## TODO:
-- add support for C3
+# Validation and Accuracy (HIGH):
+- nozzle heat method
+- build plate adhesion
+# Housekeeping (LOW)
 - comment all functions
 - move helper functions
-- add support for C1 - C3
 - add gcode glossary
 - add user defined machine behaviour
-- improve handling of mesh templates
 - PyPi
-- add support for sequentially coupled analysis
+- fix the issue where there are multiple empty steps at the beginning of the analysis
+- give users the option to 

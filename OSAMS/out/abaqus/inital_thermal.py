@@ -1,10 +1,17 @@
 def inital_thermal(elements,num_step,steps,surfaces,model):
 	temp = model['plate']
 	c_step = steps.loc[0]
+	IT = model['extruder']
+	if model['A_TEMP']:
+		IT = model['enclosure']
 	dt = c_step['dt'] 
 	s_out = f"""
 *INITIAL CONDITIONS, TYPE = TEMPERATURE
-ALLNODES, 75.
+ALLNODES, {IT}.
+*AMPLITUDE, NAME=QADD, VALUE=RELATIVE, DEFINITION=TABULAR, TIME = STEP TIME
+0, 1
+{model['e_time']},1
+{model['e_time']*1.001},0
 *SURFACE, NAME = FREE_SURFACE, TYPE = ELEMENT
 ALLELEMENTS,
 *STEP,NAME = STEP_0, INC= 20000
@@ -34,7 +41,7 @@ ALLELEMENTS,
 *SFILM
 BUILD_SURFACE, F, {c_step['BP_T']}, {model['plate']}
 **DATA FOR THE STRUCTURAL ANALYSIS
-*NODE FILE, NSET=ALLNODES, FREQUENCY = 10
+*NODE FILE, NSET=ALLNODES, FREQUENCY = 1
 NT
 *OUTPUT, FIELD
 *NODE OUTPUT, NSET=ALLNODES

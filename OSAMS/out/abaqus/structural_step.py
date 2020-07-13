@@ -1,7 +1,7 @@
 
 def structural_step(elements,step_no,steps,job_name,a_step):
 	s_out = ""	 
-	c_step = steps.iloc[step_no]
+	c_step = steps.iloc[step_no-1]
 	dt = c_step['dt'] 
 	#HEADER FOR STEP DEFINITION BUILD 
 	#PLATE BOUNDRY CONDITIONS ENFORCED
@@ -15,8 +15,8 @@ BUILD_PLATE, 1, 1
 BUILD_PLATE, 2, 2 
 BUILD_PLATE, 3, 3 
 """
-	if (steps.iloc[step_no]['type']):
-		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}\n"
+	if (steps.iloc[step_no-1]['type']):
+		es = f"*MODEL CHANGE, ADD = WITH STRAIN \nE_STEP_{step_no-1}\n"
 		s_out = s_out + es
 #	for i in range(1,step_no):
 #		es = es + f",\nE_STEP_{i}"

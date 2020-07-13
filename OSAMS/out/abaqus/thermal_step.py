@@ -14,8 +14,10 @@ def thermal_step(elements,step_no,steps,BC_changes,model):
 	if (steps.iloc[step_no]['type']):
 		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}\n"
 		#FOR ALTERNATE Heat addition
-		ef =f"*DFLUX, OP = NEW, AMPILTUDE = HA"
-		ef += f"E_STEP_{step_no}, BF, "
+		if model['A_TEMP']:
+			ef =f"*DFLUX, OP = NEW, AMPLITUDE = QADD\n"
+			ef += f"E_STEP_{step_no}, BF, {model['t_mass']*(model['extruder'] - model['enclosure'])/model['e_time']}\n"
+		es = es + ef
 		s_out = s_out + es
 
 	#list of boundry condition changes for this step
@@ -27,9 +29,9 @@ def thermal_step(elements,step_no,steps,BC_changes,model):
 		j = surf_cond(d_step,side,row['change'],model)
 		s_out = s_out + j
 
-	s_out = s_out + """*OUTPUT, FIELD, VARIABLE = PRESELECT, NUMBER INTERVAL = 1
+	s_out = s_out + """**OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
-*NODE FILE, NSET=ALLNODES, FREQUENCY = 10
+*NODE FILE, NSET=ALLNODES, FREQUENCY = 1
 NT
 *OUTPUT, FIELD
 *NODE OUTPUT, NSET=ALLNODES

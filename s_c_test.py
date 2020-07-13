@@ -10,6 +10,11 @@ import OSAMS
 import service
 from OSAMS.out.abaqus import *
 
+
+"""
+currenltly this case is meant to replicate the conditions in:
+[1] A. Armillotta, M. Bellotti, and M. Cavallaro, “Warpage of FDM parts: Experimental tests and analytic model,” Robot. Comput. Integr. Manuf., vol. 50, no. May 2017, pp. 140–152, 2018, doi: 10.1016/j.rcim.2017.09.007.
+"""
 pot = plt.figure().gca(projection='3d')
 feed = 600
 
@@ -21,7 +26,7 @@ wid_fil = 100
 l = fw * len_fil
 w = fw * wid_fil
 
-area_size = 5
+area_size = 6
 a_d = area_size * fw
 layers = 3 
 
@@ -115,18 +120,19 @@ elements = template.elements[0:0].copy()
 
 #global properties (placeholder)
 model = {}
+model['extruder'] = 270 
+model['e_time'] = 0.0924
 model['enclosure'] = 75 
 model['emissivity'] = 0.3
 model['plate'] = 210
 model['h_nat'] = 67
 model['h_fan'] = 67 
-model['A_TEMP'] = False
-model
+model['t_mass'] = 2020*1040
+model['A_TEMP'] = True 
 
 #extrudes the mesh and the template
 steps,nodes,elements,p_nodes = OSAMS.manufacture.create_steps(step_partitions,path_functs,nodes,elements,brick)
 nodes['ref'] = nodes.index
-print(p_nodes['z'])
 extrusion_steps = steps.loc[steps['type'] == 1]
 extrusion_steps = extrusion_steps.index 
 #LIST OF BOUNDARY CONDITION CHANGES
@@ -161,11 +167,11 @@ mask = (steps['layer'] == 0)&( steps['type'] == 1)
 layer1_steps = steps.loc[mask].index
 for i in layer1_steps:
 	surfaces.loc[i,'DOWN'] = 1
-
-thermal_job = f'{area_size}x{layers}x{cross}VALID_therm' 
-structural_job = f'{area_size}x{layers}x{cross}VALID_disp' 
-thermal_file = open(f'../TESTERS/{thermal_job}.inp','w+')
-structural_file = open(f'../TESTERS/{structural_job}.inp','w+')
+prefix = 'SLA'
+thermal_job = f'{area_size}x{layers}x{cross}{prefix}_therm' 
+structural_job = f'{area_size}x{layers}x{cross}{prefix}_disp' 
+thermal_file = open(f'../Thermal Models/{thermal_job}.inp','w+')
+structural_file = open(f'../Thermal Models/{structural_job}.inp','w+')
 
 
 thermal_inp = lambda x: thermal_file.write(x)
@@ -207,12 +213,10 @@ num_step = steps.shape[0]
 thermal_inp(inital_thermal(elements,num_step,steps,surfaces,model))
 structural_inp(inital_structural(elements,num_step,steps,surfaces,model,thermal_job,1))
 j = 1
-print("**************")
 for i in range(1,num_step):
 	thermal_inp(thermal_step(elements,i,steps,BC_changes,model))
 	structural_inp(structural_step(elements,i,steps,thermal_job,j))
 	j = j + 1
-	print(j)
 
 #applies the service load as described in service .inp
 if (serv):
