@@ -41,7 +41,6 @@ def merge_groups(nodes,s0,s1,d0,d1,elements, tol = 0.00001):
 		canidates = canidates[np.isclose(canidates['z'].values[:,None],z,atol = tol).any(axis = 1)]
 		if canidates.shape[0] == 0:
 			continue
-		print('help')
 
 		if (canidates.shape[0] > 0):
 			merged = canidates.index[0]

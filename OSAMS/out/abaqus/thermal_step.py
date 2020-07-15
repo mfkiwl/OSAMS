@@ -17,7 +17,7 @@ def thermal_step(elements,step_no,steps,BC_changes,model):
 		if model['A_TEMP']:
 			ef =f"*DFLUX, OP = NEW, AMPLITUDE = QADD\n"
 			ef += f"E_STEP_{step_no}, BF, {model['t_mass']*(model['extruder'] - model['enclosure'])/model['e_time']}\n"
-		es = es + ef
+			es = es + ef
 		s_out = s_out + es
 
 	#list of boundry condition changes for this step

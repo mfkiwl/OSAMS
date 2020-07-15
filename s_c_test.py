@@ -11,10 +11,6 @@ import service
 from OSAMS.out.abaqus import *
 
 
-"""
-currenltly this case is meant to replicate the conditions in:
-[1] A. Armillotta, M. Bellotti, and M. Cavallaro, “Warpage of FDM parts: Experimental tests and analytic model,” Robot. Comput. Integr. Manuf., vol. 50, no. May 2017, pp. 140–152, 2018, doi: 10.1016/j.rcim.2017.09.007.
-"""
 pot = plt.figure().gca(projection='3d')
 feed = 600
 
@@ -45,7 +41,7 @@ t0 = [t, (t/2) + (l*(wid_fil-area_size))/(2 * feed)]
 t = (w-a_d)/feed
 t90 = [t, (t/2) + (w*(len_fil-area_size))/(2 * feed)]
 deg90 = False
-cross = 0 
+cross = 90
 for i in range(0,layers):
 	#first filament
 	pos = True
@@ -53,7 +49,7 @@ for i in range(0,layers):
 	of = "G7 X0 Y0\n"
 	if (deg90):
 		l0 = f"G4 S{t90[1]}\n"
-		of = "G7 X0.15 Y-0.15\n"
+		of = f"G7 X{fw/2} Y-{fw/2}\n"
 	l1 = f"G0 X0 Y0 F{feed}\n"
 	#g_code += (l0)
 	g_code += of
@@ -128,7 +124,7 @@ model['plate'] = 210
 model['h_nat'] = 67
 model['h_fan'] = 67 
 model['t_mass'] = 2020*1040
-model['A_TEMP'] = True 
+model['A_TEMP'] = False 
 
 #extrudes the mesh and the template
 steps,nodes,elements,p_nodes = OSAMS.manufacture.create_steps(step_partitions,path_functs,nodes,elements,brick)
@@ -167,7 +163,7 @@ mask = (steps['layer'] == 0)&( steps['type'] == 1)
 layer1_steps = steps.loc[mask].index
 for i in layer1_steps:
 	surfaces.loc[i,'DOWN'] = 1
-prefix = 'SLA'
+prefix = 'CROSS'
 thermal_job = f'{area_size}x{layers}x{cross}{prefix}_therm' 
 structural_job = f'{area_size}x{layers}x{cross}{prefix}_disp' 
 thermal_file = open(f'../Thermal Models/{thermal_job}.inp','w+')
