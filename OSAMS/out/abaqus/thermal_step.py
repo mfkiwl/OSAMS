@@ -29,7 +29,7 @@ def thermal_step(elements,step_no,steps,BC_changes,model):
 		j = surf_cond(d_step,side,row['change'],model)
 		s_out = s_out + j
 
-	s_out = s_out + """**OUTPUT, FIELD, VARIABLE = PRESELECT
+	s_out = s_out + """*OUTPUT, FIELD, VARIABLE = PRESELECT
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
 *NODE FILE, NSET=ALLNODES, FREQUENCY = 1
 NT

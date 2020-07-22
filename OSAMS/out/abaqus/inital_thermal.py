@@ -39,7 +39,7 @@ ALLELEMENTS,
 
 	s_out = s_out + f"""
 *SFILM
-BUILD_SURFACE, F, {c_step['BP_T']}, {model['plate']}
+BUILD_SURFACE, F, {model['plate']}, {210}
 **DATA FOR THE STRUCTURAL ANALYSIS
 *NODE FILE, NSET=ALLNODES, FREQUENCY = 1
 NT

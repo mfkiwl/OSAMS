@@ -22,9 +22,9 @@ def materiel_model():
 *PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMAN=5.6703E-8
 *Material, name=ABSP430
 *Conductivity
-0.3,
+0.17
 *Density
-1040.,
+1140
 *Elastic
 2200e6., 0.4, 20
 1100e6., 0.4, 100
@@ -36,7 +36,7 @@ def materiel_model():
 *Expansion
 8.82e-05,
 *Specific Heat
-2020
+1640
 """)
 
 def section():
