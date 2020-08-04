@@ -22,9 +22,9 @@ wid_fil = 100
 l = fw * len_fil
 w = fw * wid_fil
 
-area_size = 6
+area_size = 6 
 a_d = area_size * fw
-layers = 3 
+layers = 6
 
 #APPLY SERVICE LOAD?
 serv = True
@@ -84,6 +84,7 @@ for i in range(0,layers):
 	g_code += f"G0 X0 Y0 Z{(i+1)*fh}\n"
 	if (cross == 90):
 		deg90 ^= True
+	g_code += "G4 S100\n"
 #g_code = """;TEST
 #;*****INITIALIZE MACHINE******
 #M104 T200
@@ -116,14 +117,15 @@ elements = template.elements[0:0].copy()
 
 #global properties (placeholder)
 model = {}
-model['extruder'] = 270 
-model['e_time'] = 0.0924
-model['enclosure'] = 75 
-model['emissivity'] = 0.3
-model['plate'] = 210
-model['h_nat'] = 67
-model['h_fan'] = 67 
-model['t_mass'] = 2020*1040
+model['extruder'] = 275		#EXTRUDER TEMPERATURE 
+model['e_time'] = 0.0924	#ELEMENT TIME NOT USED
+model['enclosure'] = 75 	#ENCLOSURE TEMPERATURE
+model['emissivity'] = 0.3	#EMISSIVITY
+model['plate'] = 75 		#PLATE TEMPERATURE
+model['h_nat'] = 30			#NATURAL CONVECTION COEFFECIENT
+model['h_fan'] = 67 		#FORCED CONVECTION COEFFICENT
+model['t_mass'] = 2020*1040	#THERMAL MASS PER UNIT VOLUME
+model['h_plate'] = 10		#Heat transfer coeffcient for build plate
 model['A_TEMP'] = False 
 
 #extrudes the mesh and the template
@@ -163,7 +165,7 @@ mask = (steps['layer'] == 0)&( steps['type'] == 1)
 layer1_steps = steps.loc[mask].index
 for i in layer1_steps:
 	surfaces.loc[i,'DOWN'] = 1
-prefix = 'CROSS'
+prefix = 'NEWERER'
 thermal_job = f'{area_size}x{layers}x{cross}{prefix}_therm' 
 structural_job = f'{area_size}x{layers}x{cross}{prefix}_disp' 
 thermal_file = open(f'../Thermal Models/{thermal_job}.inp','w+')

@@ -20,7 +20,7 @@ fh = 4.064
 wall_length = 1.542e3
 
 
-layers = 88 
+layers = 20 
 
 #APPLY SERVICE LOAD?
 serv = True
@@ -76,6 +76,7 @@ model['extruder'] = 200
 model['enclosure'] = 18 
 model['emissivity'] = 0.87
 model['plate'] = 65
+model['h_plate'] = 210 
 model['h_nat'] = 8.5
 model['h_fan'] = 8.5 
 model['e_time'] = 0.1
@@ -118,6 +119,7 @@ mask = (steps['layer'] == 0)&( steps['type'] == 1)
 layer1_steps = steps.loc[mask].index
 for i in layer1_steps:
 	surfaces.loc[i,'DOWN'] = 1
+
 prefix = 'WALL'
 thermal_job = f'{prefix}_therm' 
 structural_job = f'{prefix}_disp' 
@@ -164,10 +166,14 @@ num_step = steps.shape[0]
 thermal_inp(inital_thermal(elements,num_step,steps,surfaces,model))
 structural_inp(inital_structural(elements,num_step,steps,surfaces,model,thermal_job,1))
 j = 1
-for i in range(1,num_step):
-	thermal_inp(thermal_step(elements,i,steps,BC_changes,model))
-	structural_inp(structural_step(elements,i,steps,thermal_job,j))
-	j = j + 1
+print(steps['layer'])
+#for i in range(1,num_step):
+	#thermal_inp(thermal_step(elements,i,steps,BC_changes,model))
+	#structural_inp(structural_step(elements,i,steps,thermal_job,j))
+	#j = j + 1
+for i in range(0,layers):
+	layer_steps = steps.loc[steps['layer']==i].index
+	thermal_inp(thermal_step(elements,layer_steps,steps,BC_changes,model))
 
 #applies the service load as described in service .inp
 if (serv):

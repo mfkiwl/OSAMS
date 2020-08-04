@@ -1,6 +1,6 @@
 import pandas as pd 
+import math
 from .partition_step import *
-layer_z = 0.254
 def angle_between(v1, v2):
 	theta = (np.arctan2(np.cross(v1,v2),np.dot(v1,v2))[2])%(2*np.pi)
 	return theta
@@ -34,7 +34,7 @@ def create_steps(partitions,path_funct,nodes,elements,template):
 		row = {'BP_T':0 , 'dt': 0 ,'type': 0, 'layer': 0, 'extruder' :0, 'fan': 0}
 		row['dt'] = path_funct['time'](d2) - path_funct['time'](d1)
 		row['BP_T'] = path_funct['b_temp'](d2)
-		row['layer'] =(path_funct['z'](d1)/layer_z)
+		row['layer'] = math.floor(((path_funct['z'](d1)+0.000000001)/template['height']))
 		row['type'] = (path_funct['extruding'](d2))
 		row['extruder'] = path_funct['temp'](d2)
 		row['SOL_T'] = 'SEPARATED'

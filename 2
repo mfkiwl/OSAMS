@@ -10,7 +10,6 @@ def thermal_step(elements,step_no,steps,BC_changes,model):
 *STEP,NAME = STEP_{step_no}, INC= 20000
 *HEAT TRANSFER, DELTMX = 10.
 {min([0.01,dt])}, {dt}, 1e-9, {dt}
-*CONTROLS, ANALYSIS=DISCONTINUOUS
 """
 	if (steps.iloc[step_no]['type']):
 		es = f"*MODEL CHANGE, ADD = STRAIN FREE \nE_STEP_{step_no}\n"
@@ -30,7 +29,7 @@ def thermal_step(elements,step_no,steps,BC_changes,model):
 		j = surf_cond(d_step,side,row['change'],model)
 		s_out = s_out + j
 
-	s_out = s_out + """*OUTPUT, FIELD, VARIABLE = PRESELECT, NUMBER INTERVAL = 1
+	s_out = s_out + """**OUTPUT, FIELD, VARIABLE = PRESELECT, NUMBER INTERVAL = 1
 *OUTPUT, HISTORY, VARIABLE = PRESELECT
 *NODE FILE, NSET=ALLNODES, FREQUENCY = 10
 NT
