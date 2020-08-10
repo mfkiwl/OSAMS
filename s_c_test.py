@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 import numpy as np 
 import itertools
-import template
+import template as tp
 import time
 sys.path.append("G:\My Drive\PYthon\PROCESSMESH\FDMSIM")
 import OSAMS
@@ -24,7 +24,7 @@ w = fw * wid_fil
 
 area_size = 6 
 a_d = area_size * fw
-layers = 6
+layers = 3 
 
 #APPLY SERVICE LOAD?
 serv = True
@@ -34,25 +34,27 @@ g_code = """;TEST
 ;*****INITIALIZE MACHINE******
 M104 T200
 M106 F100
-M140 T75
+M140 T60
+G1 F60 E0
 """
 t = (l-a_d)/feed
 t0 = [t, (t/2) + (l*(wid_fil-area_size))/(2 * feed)]
 t = (w-a_d)/feed
 t90 = [t, (t/2) + (w*(len_fil-area_size))/(2 * feed)]
 deg90 = False
-cross = 90
+cross = 0
 for i in range(0,layers):
 	#first filament
 	pos = True
 	l0 = f"G4 S{t0[1]}\n"
-	of = "G7 X0 Y0\n"
+	of = f"G92 X{0} Y{0} Z{0}\n"
+	g_code += of
 	if (deg90):
 		l0 = f"G4 S{t90[1]}\n"
-		of = f"G7 X{fw/2} Y-{fw/2}\n"
-	l1 = f"G0 X0 Y0 F{feed}\n"
+		of = f"G92 X{fw/2} Y-{fw/2} Z{0}\n"
+		g_code += of
+	l1 = f"G1 E0 X0 Y0 Z{(i)*fh} F{feed}\n"
 	#g_code += (l0)
-	g_code += of
 	g_code += (l1)
 	for j in range(0,area_size):
 		x = pos*fw*area_size 
@@ -61,30 +63,30 @@ for i in range(0,layers):
 		if (deg90):
 			x,y  = y,x
 			wait = t90[1]
-		line = f"G1 X{x} Y{y}\n"
+		line = f"G1 E10 X{x} Y{y} Z{(i)*fh}\n"
 		g_code += (line)
 		if (i!=area_size-1):
 			ws = f"G4 S{wait}\n"
 			#g_code += (ws)
 
 		#next filament
-		line = f"G0 X{x} Y{y+fw}\n"
+		line = f"G1 E0 X{x} Y{y+fw} Z{(i)*fh} \n"
 		if (deg90):
-			line = f"G0 X{x+fw} Y{y}\n"
+			line = f"G1 E0 X{x+fw} Y{y} Z{(i)*fh}\n"
 
 		g_code += (line)
 		pos^=True
 	
 	#REST OF THE PLATE
-	l0 = f"G4 S{t0[1]}\n"
+	#l0 = f"G4 S{t0[1]}\n"
 	if (deg90):
 		l0 = f"G4 S{t90[1]}\n"
 	
-	#g_code += (l0)
-	g_code += f"G0 X0 Y0 Z{(i+1)*fh}\n"
+	g_code += (l0)
+	g_code += f"G1 E0  X0 Y0 Z{(i)*fh}\n"
 	if (cross == 90):
 		deg90 ^= True
-	g_code += "G4 S100\n"
+	#g_code += "G4 S100\n"
 #g_code = """;TEST
 #;*****INITIALIZE MACHINE******
 #M104 T200
@@ -99,6 +101,9 @@ area_size = area_size
 path_states = OSAMS.interpreter.read_path(g_code)
 pot.plot3D(path_states['x'],path_states['y'],path_states['z'],linestyle = 'dashed')
 
+gcode_file = open(f'6x000.GCODE','w+')
+gcode_file.write(g_code) 
+'''
 #partitions the toolpath into steps
 step_partitions = OSAMS.partititon.partition_steps(path_states,nominal_step = 0.0924)
 
@@ -106,9 +111,10 @@ path_functs = OSAMS.partititon.df_functs(path_states,'time')
 
 start = time.time()
 #gets the template (9Brick)
-cn = template.nodes[['type','ref','x','y','z','step','up','down','left','right']]
 brick = {}
+template = tp.template(0.000914,0.000254)
 brick['nodes'] = template.nodes
+cn = template.nodes[['type','ref','x','y','z','step','up','down','left','right']]
 brick['elements'] = template.elements
 brick['width'] = 0.000914
 brick['height'] = 0.000254 
@@ -224,3 +230,4 @@ if (serv):
 	
 #end = time.time()
 #print(end-start)
+'''

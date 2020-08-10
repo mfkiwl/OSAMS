@@ -5,7 +5,7 @@ ARGS:
 	step_nums:	the step indices to have sets made
 """
 def element_sets(elements,steps):
-	esets = "\n**ELEMENTS BY DEPOSISTION STEP"
+	esets = "**ELEMENTS BY DEPOSISTION STEP"
 	for i,row in steps.iterrows():
 		if (row['type'] == 1):
 			#SELECTS ELEMENTS DEPOSITED FOR THAT STEP
@@ -22,5 +22,5 @@ def element_sets(elements,steps):
 
 			esets = esets + es_def
 	#END
-	esets.join("\n")
+	esets = esets + '\n'
 	return esets

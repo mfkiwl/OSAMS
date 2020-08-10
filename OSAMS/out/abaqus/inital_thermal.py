@@ -7,7 +7,7 @@ def inital_thermal(elements,num_step,steps,surfaces,model):
 	dt = c_step['dt'] 
 	s_out = f"""
 *INITIAL CONDITIONS, TYPE = TEMPERATURE
-ALLNODES, {IT}.
+ALLNODES, {IT}
 *AMPLITUDE, NAME=QADD, VALUE=RELATIVE, DEFINITION=TABULAR, TIME = STEP TIME
 0, 1
 {model['e_time']},1

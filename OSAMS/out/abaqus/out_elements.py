@@ -14,4 +14,4 @@ def out_elements(elements,nodes,template,analysis_type = 'C',step = 100000):
 		el_def = el_def + f"\n{i+1}"
 		for j in range(0,20):
 			el_def = el_def + f",{e_nodes[j]}"
-	return el_def
+	return el_def + '\n'

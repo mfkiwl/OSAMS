@@ -12,7 +12,7 @@ args:
 returns:
 	steps:			list of steps
 """
-def create_steps(partitions,path_funct,nodes,elements,template):
+def create_steps(partitions,path_funct,nodes,elements,template,el_step = 1):
 	
 	#initializes step dataframe
 	steps = pd.DataFrame(columns = ['BP_T','dt','fan','type','layer','extruder'])
@@ -43,7 +43,7 @@ def create_steps(partitions,path_funct,nodes,elements,template):
 
 		#psuedo nodes
 		if (row['type'] == 1):
-			face,nodes,elements,psuedo_nodes = partition_step(d2,d1,path_funct,jump,step,nodes,elements,template,face,psuedo_nodes)
+			face,nodes,elements,psuedo_nodes = partition_step(d2,d1,path_funct,jump,step,nodes,elements,template,face,psuedo_nodes,nom_el_size = el_step)
 
 			if (jump  == True):
 				face_elements = list(elements.iloc[-(27):-(27-el_size)].index.copy())

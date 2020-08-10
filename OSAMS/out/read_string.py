@@ -1,12 +1,12 @@
 import shutil
 import os
 
-def read_data(t_file,tag):
+def read_string(t_file,tag):
 	'''
-	read_data
-	reads data denoted by @DATA@{TAG}=number
+	read_string
+	reads a string denoted by @STRING@{TAG}="TEXT"
 	args:
-		t_file:	file
+		t_file: file
 		tag: tag
 	'''
 	shutil.move(t_file,t_file+"~")
@@ -16,8 +16,9 @@ def read_data(t_file,tag):
 	for sline in old:
 		line = sline.strip()
 		words = line.split('=')
-		if words[0]==(f"@DATA@{tag}"):
-			value = float(words[1])
+		if words[0]==(f"@STRING@{tag}"):
+			value = str(words[1])
+			value = value.strip('\"')
 		else:
 			new.write(sline)
 			pass

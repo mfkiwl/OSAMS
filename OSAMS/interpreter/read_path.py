@@ -63,7 +63,7 @@ def read_path(g_code):
 		#LINEAR MOVE
 		if (words[0][0] == ";"):
 			pass
-		elif (words[0] == "G7"):
+		elif (words[0] == "G92"):
 			for j in words[1:]:
 				#READS DESTINATION LOCATION
 				prefix = j[0]
@@ -75,7 +75,7 @@ def read_path(g_code):
 					offset[2] = float(j[1:])
 
 		elif (words[0] == "G1" or words[0] == "G0"):
-			extruding.append(int(words[0][1]))
+			e = 0
 			P1 = position.copy()
 
 			#where does the head go
@@ -90,6 +90,10 @@ def read_path(g_code):
 					position[2] = float(j[1:])
 				if (prefix == "F"):
 					feed_speed = float(j[1:])/60
+				if (prefix == "E"):
+					e = int(int(j[1:])>0)
+
+			extruding.append(e)
 
 			
 			position = position + offset 

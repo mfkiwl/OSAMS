@@ -25,7 +25,7 @@ def out_surf(elements,surfaces):
 			step = i[0]
 			name = i[1]
 		
-			s_def = f"\n*SURFACE, NAME = {name}_{step}, TYPE=ELEMENT"
+			s_def = f"*SURFACE, NAME = {name}_{step}, TYPE=ELEMENT"
 
 			if (name == 'DOWN'):
 				els = elements.loc[elements['type'].apply(lambda x: bool(down_check.match(x)))]
