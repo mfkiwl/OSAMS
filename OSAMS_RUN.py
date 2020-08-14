@@ -27,8 +27,11 @@ import os
 serv = True 
 #i_file = 'EXAMPLE.inp'
 i_file = input('ENTER PATH OF INP FILE:')
-input("END")
 r_file = 'CHANGE_FILE.inp'
+try:
+	os.remove(r_file)
+except:
+	pass
 shutil.copy(i_file,r_file)
 
 job_name = OSAMS.out.read_string(r_file,'JOB_NAME')
@@ -60,12 +63,12 @@ path_functs = OSAMS.partititon.df_functs(path_states,'time')
 
 #gets the template (1Brick)
 brick = {}
-template_path = OSAMS.out.read_data(r_file,'template')
+template_path = OSAMS.out.read_string(r_file,'template')
 f_w = OSAMS.out.read_data(r_file,'bead_width')
 f_h = OSAMS.out.read_data(r_file,'bead_height')
 brick['width'] = f_w
-if (type(template_path)=='string'):
-	tpl = template(f_w,f_h,template = template_path)
+if (template_path != 0.0):
+	tpl = template(f_w,f_h,template = f'{template_path}.xlsx')
 else:
 	tpl = template(f_w,f_h)
 

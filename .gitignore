@@ -1,6 +1,6 @@
 __pycache__/*
 *.swp
-*.xlsx
+
 **/__pycache__/
 analysis.inp
 SUBROUTINES/dflux.for
@@ -10,4 +10,5 @@ pout.csv
 laminate.inp
 laminate.inp
 ]
-*.inp
+EXAMPLES/PLA/*
+

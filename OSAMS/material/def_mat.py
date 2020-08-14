@@ -1,5 +1,5 @@
 """
-*Material, name=ABSP400
+*Material, name=ABS
 *Conductivity
  0.3,
 *Density
@@ -20,7 +20,7 @@
 def materiel_model():
 	return ("""
 *PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMAN=5.6703E-8
-*Material, name=ABSP430
+*Material, name=ABS
 *Conductivity
 0.3
 *Density
@@ -40,4 +40,4 @@ def materiel_model():
 """)
 
 def section():
-	return """*SOLID SECTION, ELSET=ALLELEMENTS, MATERIAL = ABSP430"""
+	return """*SOLID SECTION, ELSET=ALLELEMENTS, MATERIAL = ABS"""
