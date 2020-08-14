@@ -1,5 +1,5 @@
 **EXAMPLE FILE**
-@STRING@JOB_NAME="6x033"
+@STRING@JOB_NAME="6x020"
 @STRING@GCODE="6x000.GCODE"
 **@STRING@TEMPLATE='1BRICK'
 **TIME STEPS FOR ELEMENTS AND STEPS
@@ -8,9 +8,9 @@
 @DATA@el_step=0.0924
 @DATA@h_nat=67
 @DATA@h_plate=210
-@DATA@plate_temp=60
-@DATA@extruder_temp=210
-@DATA@enclosure_temp=27
+@DATA@plate_temp=75
+@DATA@extruder_temp=275
+@DATA@enclosure_temp=75
 @DATA@emissivity=0.32
 @DATA@bead_width=0.000914
 @DATA@bead_height=0.000254
