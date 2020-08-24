@@ -1,6 +1,16 @@
+'''
+READ PATH
+THEORY
+this file takes g code and turns it into a series of points along the toolpath by default the points are taken when the extruder starts or ends extruding, 50 points are taken for a curve, or when the extruder changes speed
+CHANGES
+DATE		AUTHOR		CHANGE
+2020.08.19	Chris Bock	None
+2020.08.23	Chris Bock	Fixed Decimal Values of EXXX
+2020.08.23	Chris Bock	Removed MPL
+'''
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 """
 angle between two vectors 
@@ -91,7 +101,7 @@ def read_path(g_code):
 				if (prefix == "F"):
 					feed_speed = float(j[1:])/60
 				if (prefix == "E"):
-					e = int(int(j[1:])>0)
+					e = int(float(j[1:])>0)
 
 			extruding.append(e)
 

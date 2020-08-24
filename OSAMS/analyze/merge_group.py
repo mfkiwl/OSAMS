@@ -1,3 +1,10 @@
+'''
+MERGE GROUPS
+Theory: Merges the nodes on a given surface and drops the higher numbered node
+Changes:
+Date		Author		Changes
+8/19/20 	Chris Bock	NONE
+'''
 import pandas as pd
 import numpy as np
 

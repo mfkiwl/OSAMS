@@ -1,3 +1,12 @@
+'''
+OSAMS RUN
+old main function - this is the same as run.py
+this is responsible for using all of components provided in OSAMS
+CHANGES
+DATE		AUTHOR		CHANGE
+2020.08.24	Chris Bock	DEPRECATED
+2020.8.20	Chris Bock	None
+'''
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd

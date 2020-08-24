@@ -1,19 +1,19 @@
 **EXAMPLE FILE**
-@STRING@JOB_NAME="6x020"
-@STRING@GCODE="6x000.GCODE"
+@STRING@JOB_NAME="WALL_BAAM"
+@STRING@GCODE="wall.GCODE"
 **@STRING@TEMPLATE='1BRICK'
 **TIME STEPS FOR ELEMENTS AND STEPS
 @DATA@flux=0
-@DATA@del_t=0.0924
-@DATA@el_step=0.0924
-@DATA@h_nat=67
+@DATA@del_t=20
+@DATA@el_step=10
+@DATA@h_nat=30
 @DATA@h_plate=210
 @DATA@plate_temp=75
 @DATA@extruder_temp=275
 @DATA@enclosure_temp=75
-@DATA@emissivity=0.32
-@DATA@bead_width=0.000914
-@DATA@bead_height=0.000254
+@DATA@emissivity=0.3
+@DATA@bead_width=.0010
+@DATA@bead_height=.004064
 @NODES
 @N_SETS
 @ELEMENTS
@@ -21,11 +21,11 @@
 @SURFACES
 **MATERIEL DEF
 *PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMAN=5.6703E-8
-*Material, name=ABSP430
+*Material, name=CFABS
 *Conductivity
-0.3,
+0.17
 *Density
-1040.,
+1140.,
 *Elastic
 2200e6., 0.4, 20
 1100e6., 0.4, 100
@@ -37,7 +37,7 @@
 *Expansion
 8.82e-05,
 *Specific Heat
-2020
-*SOLID SECTION, ELSET=ALLELEMENTS, MATERIAL = ABSP430
+1640
+*SOLID SECTION, ELSET=ALLELEMENTS, MATERIAL = CFABS
 @STEPS
 @SERVICE

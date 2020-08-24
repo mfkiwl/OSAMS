@@ -1,7 +1,7 @@
 def inital_structural(elements,num_step,steps,surfaces,model,job_name,n_step):
 	s_out = f"""
 *STEP,NAME = STEP_0, INC= 20000, NLGEOM = YES
-*STATIC, NLGEOM=YES
+*STATIC
 *TEMPERATURE,FILE={job_name}, BSTEP=1
 *BOUNDARY, TYPE = DISPLACEMENT
 BUILD_PLATE, 1, 1 

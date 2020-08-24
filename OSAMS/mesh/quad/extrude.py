@@ -1,3 +1,10 @@
+'''
+extrude
+extrudes the mesh
+changes:
+DATE		AUTHOR		CHANGE
+2020.8.19	Chris Bock	None
+'''
 import pandas as pd
 import numpy as np
 x_hat = np.array([1,0,0])
@@ -17,7 +24,7 @@ def rotZ(theta):
 
 def average_angle(theta1,theta2):
 	U1 =  np.array([np.cos(theta1), np.sin(theta1),0])
-	U2 =  np.array([np.cos(theta2), np.sin(theta2),0])
+	U2 =  np.array([np.cos(theta2), np.sin(theta2),0])	
 	U = (U1+ U2)/2
 	return angle_between(x_hat,U)
 

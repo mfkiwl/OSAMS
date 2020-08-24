@@ -1,9 +1,18 @@
+'''
+merge_p(uesdo)_nodes
+THEORY
+this file merges surfaces by taking points at the center of the surface and checking for proximity
+if the points are close enough then the nodes of the two surfaces will be merged with the merge group function
+CHANGES
+Date		Author		Change
+2020.8.19	Chris Bock	None
+'''
 import numpy as np
 import pandas as pd
 from .merge_group import *
 
 """
-merges the psuedonodes aka step points
+merges the psuedonodes aka surface points
 args:
 	p_nodes:	dataframe of psuedonodes
 	nodes:		model nodes

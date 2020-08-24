@@ -17,6 +17,7 @@ def thermal_step(elements,step_no,steps,BC_changes,model):
 		#FOR ALTERNATE Heat addition
 		if model['A_TEMP']:
 			ef =f"*DFLUX, OP = NEW, AMPLITUDE = QADD\n"
+			print(model['e_time'])
 			ef += f"E_STEP_{step_no}, BF, {model['t_mass']*(model['extruder'] - model['enclosure'])/model['e_time']}\n"
 			es = es + ef
 		s_out = s_out + es

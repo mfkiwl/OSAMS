@@ -3,6 +3,9 @@ import numpy as np
 from increment import *
 """
 this file is responsible for creating nodes, and renumbering elements nodes and extruding the mesh on an element level
+CHANGES
+DATE		AUTHOR		CHANGE
+2020.8.23	Chris Bock	None
 """ 
 
 x_hat = np.array([1,0,0])

@@ -1,3 +1,6 @@
+'''
+DEPRECATED
+'''
 import pandas as pd
 import numpy as np
 e_list = [f"n{i}" for i in range(1,21)]

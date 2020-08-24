@@ -3,19 +3,17 @@ import sys
 import pandas as pd
 import numpy as np 
 import itertools
-import template as tp
+#import template as tp
 import time
-sys.path.append("G:\My Drive\PYthon\PROCESSMESH\FDMSIM")
-import OSAMS
-import service
-from OSAMS.out.abaqus import *
 
 
 pot = plt.figure().gca(projection='3d')
 feed = 600
 
-fw = 0.914
-fh = 0.254
+
+#BEAD DIMS
+fw = 0.48
+fh = 0.1
 
 len_fil = 200
 wid_fil = 100
@@ -24,7 +22,7 @@ w = fw * wid_fil
 
 area_size = 6 
 a_d = area_size * fw
-layers = 3 
+layers = 6 
 
 #APPLY SERVICE LOAD?
 serv = True
@@ -98,10 +96,10 @@ for i in range(0,layers):
 #G3 X2 Y2 I0 J1
 #"""
 area_size = area_size
-path_states = OSAMS.interpreter.read_path(g_code)
-pot.plot3D(path_states['x'],path_states['y'],path_states['z'],linestyle = 'dashed')
+#path_states = OSAMS.interpreter.read_path(g_code)
+#pot.plot3D(path_states['x'],path_states['y'],path_states['z'],linestyle = 'dashed')
 
-gcode_file = open(f'6x000.GCODE','w+')
+gcode_file = open(f'6x6PLA.GCODE','w+')
 gcode_file.write(g_code) 
 '''
 #partitions the toolpath into steps

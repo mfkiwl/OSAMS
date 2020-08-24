@@ -1,3 +1,12 @@
+'''
+CREATE STEP
+creates the inital mesh, with all of the associated data 
+THEORY
+The tool path is split into steps based on a maximum time step, then these steps are split into elements
+CHANGES
+DATE		AUTHOR		CHANGE
+2020.8.19	Chris Bock	None
+'''
 import pandas as pd 
 import math
 from .partition_step import *

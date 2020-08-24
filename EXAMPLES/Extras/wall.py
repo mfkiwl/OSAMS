@@ -1,14 +1,18 @@
+'''
+Wall Generates Sample G Code for printing a 2 filament wide wall
+
+CHANGES
+DATE		AUTHOR		CHANGE
+2020.8.20	Chris Bock	None
+'''
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
 import numpy as np 
 import itertools
-import template
+#import template
 import time
 sys.path.append("G:\My Drive\PYthon\PROCESSMESH\FDMSIM")
-import OSAMS
-import service
-from OSAMS.out.abaqus import *
 
 
 pot = plt.figure().gca(projection='3d')
@@ -20,7 +24,7 @@ fh = 4.064
 wall_length = 1.542e3
 
 
-layers = 20 
+layers = 88
 
 #APPLY SERVICE LOAD?
 serv = True
@@ -37,9 +41,9 @@ pos = True
 for i in range(0,layers):
 	z = i * fh
 	g_code += f"G0 Y0 Z{z}\n"
-	g_code += f"G1 X{wall_length} Y0 Z{z}\n"
+	g_code += f"G1 X{wall_length} Y0 Z{z} E100\n"
 	g_code += f"G0 X{wall_length} Y{fw}\n"
-	g_code += f"G1 X0\n"
+	g_code += f"G1 X0 E100\n"
 #g_code = """;TEST
 #;*****INITIALIZE MACHINE******
 #M104 T200
@@ -49,37 +53,44 @@ for i in range(0,layers):
 #G0 X0 Y0 Z0 F60
 #G1 X2 Y0 Z0
 #G3 X2 Y2 I0 J1
-#"""
+gcode_file = open(f'wall.GCODE','w+')
+gcode_file.write(g_code) 
+'''
 path_states = OSAMS.interpreter.read_path(g_code)
 pot.plot3D(path_states['x'],path_states['y'],path_states['z'],linestyle = 'dashed')
 
 plt.show()
+gcode_file = open(f'wall.GCODE','w+')
+gcode_file.write(g_code) 
+
 #partitions the toolpath into steps
-step_partitions = OSAMS.partititon.partition_steps(path_states,nominal_step = 1000)
+step_partitions = OSAMS.partititon.partition_steps(path_states,nominal_step = 0.0924)
 
 path_functs = OSAMS.partititon.df_functs(path_states,'time')
 
 start = time.time()
 #gets the template (9Brick)
-cn = template.nodes[['type','ref','x','y','z','step','up','down','left','right']]
 brick = {}
+template = tp.template(0.000914,0.000254)
 brick['nodes'] = template.nodes
+cn = template.nodes[['type','ref','x','y','z','step','up','down','left','right']]
 brick['elements'] = template.elements
-brick['width'] = fw/1000 
-brick['height'] = fh/1000
+brick['width'] = 0.000914
+brick['height'] = 0.000254 
 nodes= cn[0:0].copy()
 elements = template.elements[0:0].copy()
 
 #global properties (placeholder)
 model = {}
-model['extruder'] = 200 
-model['enclosure'] = 18 
-model['emissivity'] = 0.87
-model['plate'] = 65
-model['h_plate'] = 210 
-model['h_nat'] = 8.5
-model['h_fan'] = 8.5 
-model['e_time'] = 0.1
+model['extruder'] = 275		#EXTRUDER TEMPERATURE 
+model['e_time'] = 0.0924	#ELEMENT TIME NOT USED
+model['enclosure'] = 75 	#ENCLOSURE TEMPERATURE
+model['emissivity'] = 0.3	#EMISSIVITY
+model['plate'] = 75 		#PLATE TEMPERATURE
+model['h_nat'] = 30			#NATURAL CONVECTION COEFFECIENT
+model['h_fan'] = 67 		#FORCED CONVECTION COEFFICENT
+model['t_mass'] = 2020*1040	#THERMAL MASS PER UNIT VOLUME
+model['h_plate'] = 10		#Heat transfer coeffcient for build plate
 model['A_TEMP'] = False 
 
 #extrudes the mesh and the template
@@ -119,12 +130,11 @@ mask = (steps['layer'] == 0)&( steps['type'] == 1)
 layer1_steps = steps.loc[mask].index
 for i in layer1_steps:
 	surfaces.loc[i,'DOWN'] = 1
-
-prefix = 'WALL'
-thermal_job = f'{prefix}_therm' 
-structural_job = f'{prefix}_disp' 
-thermal_file = open(f'../{thermal_job}.inp','w+')
-structural_file = open(f'../{structural_job}.inp','w+')
+prefix = 'NEWERER'
+thermal_job = f'{area_size}x{layers}x{cross}{prefix}_therm' 
+structural_job = f'{area_size}x{layers}x{cross}{prefix}_disp' 
+thermal_file = open(f'../Thermal Models/{thermal_job}.inp','w+')
+structural_file = open(f'../Thermal Models/{structural_job}.inp','w+')
 
 
 thermal_inp = lambda x: thermal_file.write(x)
@@ -160,20 +170,16 @@ structural_inp(element_sets(elements,steps))
 structural_inp(node_sets(bs_nodes,"BUILD_PLATE"))
 
 thermal_inp(out_surf(elements,surfaces))
-print(nodes.shape[0])
+#print(nodes.shape[0])
 num_step = steps.shape[0]
 
 thermal_inp(inital_thermal(elements,num_step,steps,surfaces,model))
 structural_inp(inital_structural(elements,num_step,steps,surfaces,model,thermal_job,1))
 j = 1
-print(steps['layer'])
-#for i in range(1,num_step):
-	#thermal_inp(thermal_step(elements,i,steps,BC_changes,model))
-	#structural_inp(structural_step(elements,i,steps,thermal_job,j))
-	#j = j + 1
-for i in range(0,layers):
-	layer_steps = steps.loc[steps['layer']==i].index
-	thermal_inp(thermal_step(elements,layer_steps,steps,BC_changes,model))
+for i in range(1,num_step):
+	thermal_inp(thermal_step(elements,i,steps,BC_changes,model))
+	structural_inp(structural_step(elements,i,steps,thermal_job,j))
+	j = j + 1
 
 #applies the service load as described in service .inp
 if (serv):
@@ -183,3 +189,4 @@ if (serv):
 	
 #end = time.time()
 #print(end-start)
+'''
