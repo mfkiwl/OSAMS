@@ -3,13 +3,13 @@ OSAMS_GUI
 this is the code for the GUI interface
 CHANGES
 DATE		AUTHOR		CHANGE
-2020.8.24	Chris Bock
+2020.08.24	Chris Bock	Fixed Imported Modules
+2020.8.24	Chris Bock	Tested
 '''
 from tkinter import *
 import tkinter.filedialog
-from tkinter import simpledialog
 from tkinter import ttk
-from ttk import messagebox
+from tkinter import messagebox
 from run_funct import *
 root = Tk()
 root.title("OSAMS 0.99.1 GUI")
@@ -43,8 +43,9 @@ def run():
 	gc_file = g_code.get()
 	inp_file = in_file.get()
 	out_dir = out_directory.get()
+	messagebox.showinfo('HELP')
 	out_str = OSAMS_RUN(inp_file,out_dir,job,g_file=gc_file,template_path=template_file)
-	message_box(out_str)
+	#message_box(out_str)
 
 
 
