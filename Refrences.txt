@@ -1,0 +1,7 @@
+
+[1]	A. Cattenone, S. Morganti, G. Alaimo, and F. Auricchio, “Finite element analysis of additive manufacturing based on fused deposition modeling: Distortions prediction and comparison with experimental data,” J. Manuf. Sci. Eng. Trans. ASME, vol. 141, no. 1, 2019, doi: 10.1115/1.4041626.
+[2]	Y. Zhang and Y. Chou, “Three-dimensional finite element analysis simulations of the fused deposition modelling process,” Proc. Inst. Mech. Eng. Part B J. Eng. Manuf., vol. 220, no. 10, pp. 1663–1671, 2006, doi: 10.1243/09544054JEM572.
+[3]	A. Armillotta, M. Bellotti, and M. Cavallaro, “Warpage of FDM parts: Experimental tests and analytic model,” Robot. Comput. Integr. Manuf., vol. 50, no. May 2017, pp. 140–152, 2018, doi: 10.1016/j.rcim.2017.09.007.
+[4] “Stratasys ABSplus P430 | StratasysTM Support Center,” ABSplus-P430, p. stratasys.com, 2020, [Online]. Available: https://support.stratasys.com/materials/fdm-materials/absplus-p430.
+[5]	A. Grant, “Modeling Simulation and Validation of 3D printed Tensile Specimen,” University of Maine, 2019.
+

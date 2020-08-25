@@ -119,6 +119,7 @@ def OSAMS_RUN(i_file,out_dir,job_name,g_file = 'N/A',template_path = 'N/A'):
 	#print(len(step_partitions))
 	steps,nodes,elements,p_nodes = OSAMS.manufacture.create_steps(step_partitions,path_functs,nodes,elements,brick,el_step = e_step)
 	print(steps.shape[0])
+	print(steps['layer'])
 	nodes['ref'] = nodes.index
 	log = log + (f'NUMBER OF PRE MERGE NODES: {nodes.shape[0]}\n')
 	extrusion_steps = steps.loc[steps['type'] == 1]
@@ -191,7 +192,7 @@ def OSAMS_RUN(i_file,out_dir,job_name,g_file = 'N/A',template_path = 'N/A'):
 
 	OSAMS.out.ins_tag(thermal_file,'EL_SETS',element_sets(elements,steps))
 	OSAMS.out.ins_tag(structural_file,'EL_SETS',element_sets(elements,steps))
-	#thermal_inp(build_surf(elements,steps))
+	#(build_surf(elements,steps))
 	#structural_inp(element_sets(elements,steps))
 	OSAMS.out.ins_tag(structural_file,'N_SETS',node_sets(bs_nodes,"BUILD_PLATE"))
 	OSAMS.out.ins_tag(thermal_file,'N_SETS',node_sets(bs_nodes,"BUILD_PLATE"))
